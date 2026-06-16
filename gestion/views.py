@@ -5,6 +5,7 @@ from datetime import date
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
+from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 from django.conf import settings
 from .models import Utilisateur, Demande, Attestation, JournalAction, EtudiantDB
@@ -137,6 +138,43 @@ def ajouter_demande(request):
         utilisateur.nom = f"{etudiant.prenom} {etudiant.nom}"
         utilisateur.save()
         journaliser(utilisateur, 'soumission', f"Demande soumise par {utilisateur.nom}")
+
+        # Email étudiant — confirmation de réception
+        email_etudiant = etudiant.email or utilisateur.email
+        if email_etudiant:
+            try:
+                EmailMessage(
+                    subject="Votre demande est en cours de traitement",
+                    body=(
+                        f"Bonjour {utilisateur.nom},\n\n"
+                        f"Votre demande d'{type_document} a bien été reçue et est en cours de traitement.\n"
+                        f"Vous recevrez une confirmation dès qu'elle sera traitée.\n\n"
+                        f"Cordialement,\nAttestaFlow EMSI"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[email_etudiant],
+                ).send()
+            except Exception:
+                pass
+
+        # Email agents/admins — notification nouvelle demande
+        agents = Utilisateur.objects.filter(role__in=['agent', 'admin'])
+        emails_agents = [a.email for a in agents if a.email]
+        if emails_agents:
+            try:
+                EmailMessage(
+                    subject="Nouvelle demande d'attestation",
+                    body=(
+                        f"Une nouvelle demande d'{type_document} a été soumise "
+                        f"par {utilisateur.nom}.\n"
+                        f"Connectez-vous pour la traiter."
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=emails_agents,
+                ).send()
+            except Exception:
+                pass
+
         return render(request, 'demande.html', {
             'success': True,
             'user': request.user,
@@ -202,6 +240,33 @@ def accepter_demande(request, id):
         d.statut = "acceptée"
         d.save()
         journaliser(u, 'validation', f"Demande #{id} de {d.utilisateur.nom} validée")
+
+        # Email étudiant — attestation en pièce jointe
+        try:
+            pdf_response = generer_attestation_pdf(request, d.id)
+            pdf_bytes = pdf_response.content
+            try:
+                etudiant_obj = EtudiantDB.objects.get(matricule=d.matricule)
+                email_dest = etudiant_obj.email or d.utilisateur.email
+            except EtudiantDB.DoesNotExist:
+                email_dest = d.utilisateur.email
+            if email_dest:
+                msg = EmailMessage(
+                    subject="Votre attestation est prête ✅",
+                    body=(
+                        f"Bonjour {d.utilisateur.nom},\n\n"
+                        f"Votre {d.type_document} a été acceptée.\n"
+                        f"Veuillez trouver votre attestation en pièce jointe.\n\n"
+                        f"Cordialement,\nAttestaFlow EMSI"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[email_dest],
+                )
+                msg.attach('attestation.pdf', pdf_bytes, 'application/pdf')
+                msg.send()
+        except Exception:
+            pass
+
         return redirect('/liste/')
     except:
         return HttpResponse("Erreur")
