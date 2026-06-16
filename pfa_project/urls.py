@@ -33,6 +33,7 @@ urlpatterns = [
     path('parametres/', views.parametres),
     path('changer-password/', views.changer_password),
     path('verifier/<str:numero>/', views.verifier_public),
+    path('verifier-matricule/<str:matricule>/', views.verifier_matricule),
     path('admin-supprimer-user/<int:user_id>/', views.supprimer_utilisateur),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
   + static(settings.STATIC_URL, document_root=settings.BASE_DIR / 'gestion' / 'static')

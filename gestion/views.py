@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.conf import settings
-from .models import Utilisateur, Demande, Attestation, JournalAction
+from .models import Utilisateur, Demande, Attestation, JournalAction, EtudiantDB
 
 
 def journaliser(utilisateur, action, detail=''):
@@ -110,22 +110,32 @@ def ajouter_demande(request):
     derniere_demande = Demande.objects.filter(utilisateur=utilisateur).order_by('-id').first()
 
     if request.method == "POST":
+        matricule = request.POST.get('matricule', '').strip()
+        type_document = request.POST.get('type_document', 'Attestation de scolarité')
+        try:
+            etudiant = EtudiantDB.objects.get(matricule=matricule)
+        except EtudiantDB.DoesNotExist:
+            return render(request, 'demande.html', {
+                'error_matricule': 'Matricule introuvable ❌ — vérifiez votre matricule et réessayez.',
+                'submitted_matricule': matricule,
+                'user': request.user,
+                'role': utilisateur.role,
+                'demandes_count': Demande.objects.filter(utilisateur=utilisateur).count(),
+            })
         Demande.objects.create(
-            type_document=request.POST.get('type_document', 'Attestation de scolarité'),
+            type_document=type_document,
             statut="en attente",
             utilisateur=utilisateur,
-            cin=request.POST.get('cin', ''),
-            date_naissance=request.POST.get('date_naissance', ''),
-            lieu_naissance=request.POST.get('lieu_naissance', ''),
-            filiere=request.POST.get('filiere', ''),
-            niveau=request.POST.get('niveau', ''),
-            annee_universitaire=request.POST.get('annee_universitaire', ''),
-            matricule=request.POST.get('matricule', ''),
+            cin=etudiant.cin,
+            date_naissance=etudiant.date_naissance,
+            lieu_naissance=etudiant.lieu_naissance,
+            filiere=etudiant.filiere,
+            niveau=etudiant.niveau,
+            annee_universitaire=etudiant.annee_universitaire,
+            matricule=etudiant.matricule,
         )
-        nom = request.POST.get('nom_complet', '')
-        if nom:
-            utilisateur.nom = nom
-            utilisateur.save()
+        utilisateur.nom = f"{etudiant.prenom} {etudiant.nom}"
+        utilisateur.save()
         journaliser(utilisateur, 'soumission', f"Demande soumise par {utilisateur.nom}")
         return render(request, 'demande.html', {
             'success': True,
@@ -1350,6 +1360,22 @@ def supprimer_utilisateur(request, user_id):
     except Utilisateur.DoesNotExist:
         pass
     return redirect('/admin-users/')
+
+
+# 🔍 VÉRIFIER MATRICULE (AJAX)
+def verifier_matricule(request, matricule):
+    try:
+        e = EtudiantDB.objects.get(matricule=matricule)
+        return JsonResponse({
+            'found': True,
+            'nom': e.nom,
+            'prenom': e.prenom,
+            'filiere': e.filiere,
+            'niveau': e.niveau,
+            'annee_universitaire': e.annee_universitaire,
+        })
+    except EtudiantDB.DoesNotExist:
+        return JsonResponse({'found': False})
 
 
 # 404
