@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Amiri&family=Cairo:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: #fff;
+    color: #1a1a2e;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Bande supérieure */
+  .header-band {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 60%, #3949ab 100%);
+    padding: 30px 40px 25px;
+    position: relative;
+  }
+
+  .header-band::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 0; right: 0;
+    height: 40px;
+    background: #1a237e;
+    clip-path: ellipse(55% 100% at 50% 0%);
+  }
+
+  .logo-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .etablissement {
+    color: white;
+    text-align: center;
+    flex: 1;
+  }
+
+  .etablissement h1 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .etablissement p {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-top: 4px;
+  }
+
+  .logo-placeholder {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* Corps principal */
+  .body {
+    padding: 50px 45px 30px;
+  }
+
+  /* Titre attestation */
+  .titre-section {
+    text-align: center;
+    margin-bottom: 35px;
+    position: relative;
+  }
+
+  .titre-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a237e;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+
+  .titre-underline {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #1a237e, #7986cb);
+    margin: 10px auto 0;
+    border-radius: 2px;
+  }
+
+  /* Bloc "Le soussigné" */
+  .intro-text {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #333;
+    margin-bottom: 25px;
+    text-align: justify;
+  }
+
+  /* Carte infos bénéficiaire */
+  .info-card {
+    background: #f5f6fa;
+    border-left: 4px solid #3949ab;
+    border-radius: 0 8px 8px 0;
+    padding: 20px 25px;
+    margin: 20px 0 28px;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .info-row:last-child { margin-bottom: 0; }
+
+  .info-label {
+    font-weight: 700;
+    color: #1a237e;
+    min-width: 180px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .info-dots {
+    flex: 1;
+    border-bottom: 1px dotted #aaa;
+    margin: 0 8px 4px;
+  }
+
+  .info-value {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 13px;
+  }
+
+  /* Texte de délivrance */
+  .delivrance {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #333;
+    margin: 20px 0;
+    text-align: justify;
+  }
+
+  /* Pied de page */
+  .footer {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .signature-block {
+    text-align: center;
+  }
+
+  .signature-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a237e;
+    text-transform: uppercase;
+    margin-bottom: 50px;
+  }
+
+  .signature-line {
+    width: 160px;
+    border-top: 1.5px solid #333;
+    margin: 0 auto;
+  }
+
+  .signature-name {
+    font-size: 11px;
+    color: #555;
+    margin-top: 6px;
+  }
+
+  /* QR code */
+  .qr-block {
+    text-align: center;
+  }
+
+  .qr-block img {
+    width: 90px;
+    height: 90px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 4px;
+  }
+
+  .qr-label {
+    font-size: 9px;
+    color: #888;
+    margin-top: 5px;
+  }
+
+  /* Numéro & date */
+  .meta-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #777;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 12px;
+    margin-top: 20px;
+  }
+
+  .numero-att {
+    font-weight: 700;
+    color: #3949ab;
+  }
+
+  /* Filigrane */
+  .watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-size: 80px;
+    font-weight: 900;
+    color: rgba(26, 35, 126, 0.04);
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* Bande déco latérale gauche */
+  .side-accent {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, #1a237e, #7986cb, #1a237e);
+  }
+
+  .side-accent-right {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, #1a237e, #7986cb, #1a237e);
+  }
+
+  /* Badge valide */
+  .badge-valide {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid #a5d6a7;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="side-accent"></div>
+  <div class="side-accent-right"></div>
+  <div class="watermark">OFFICIEL</div>
+
+  <!-- EN-TÊTE -->
+  <div class="header-band">
+    <div class="logo-row">
+      <div class="logo-placeholder">LOGO<br>UNIV</div>
+      <div class="etablissement">
+        <h1>Université Mohammed V – Rabat</h1>
+        <p>Faculté des Sciences Juridiques, Économiques et Sociales</p>
+        <p>Service de la Scolarité</p>
+      </div>
+      <div class="logo-placeholder">LOGO<br>FAC</div>
+    </div>
+  </div>
+
+  <!-- CORPS -->
+  <div class="body">
+    <div class="titre-section">
+      <h2>Attestation de Scolarité</h2>
+      <div class="titre-underline"></div>
+      <span class="badge-valide">✓ Document Officiel</span>
+    </div>
+
+    <p class="intro-text">
+      Le soussigné, Doyen de la Faculté des Sciences Juridiques, Économiques et Sociales
+      de l'Université Mohammed V de Rabat, atteste que l'étudiant(e) dont
+      les informations figurent ci-dessous est régulièrement inscrit(e) dans notre établissement
+      pour l'année universitaire en cours.
+    </p>
+
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">Nom complet</span>
+        <span class="info-dots"></span>
+        <span class="info-value">{{ beneficiaire.nom }} {{ beneficiaire.prenom }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">CIN</span>
+        <span class="info-dots"></span>
+        <span class="info-value">{{ beneficiaire.cin }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Date de naissance</span>
+        <span class="info-dots"></span>
+        <span class="info-value">{{ beneficiaire.date_naissance }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Filière</span>
+        <span class="info-dots"></span>
+        <span class="info-value">{{ beneficiaire.filiere }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Niveau</span>
+        <span class="info-dots"></span>
+        <span class="info-value">{{ beneficiaire.niveau }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Année universitaire</span>
+        <span class="info-dots"></span>
+        <span class="info-value">{{ beneficiaire.annee_universitaire }}</span>
+      </div>
+    </div>
+
+    <p class="delivrance">
+      La présente attestation est délivrée à l'intéressé(e) sur sa demande,
+      pour servir et valoir ce que de droit. Elle ne peut être utilisée qu'à des fins
+      légitimes et doit être présentée dans son intégralité.
+    </p>
+
+    <p class="delivrance">
+      Fait à Rabat, le <strong>{{ date_emission }}</strong>
+    </p>
+
+    <!-- PIED -->
+    <div class="footer">
+      <div class="qr-block">
+        <img src="{{ qr_code_path }}" alt="QR Code de vérification"/>
+        <p class="qr-label">Scanner pour vérifier</p>
+        <p class="qr-label">l'authenticité du document</p>
+      </div>
+
+      <div class="signature-block">
+        <p class="signature-title">Le Doyen</p>
+        <div class="signature-line"></div>
+        <p class="signature-name">Cachet et Signature</p>
+      </div>
+    </div>
+
+    <div class="meta-info">
+      <span>N° : <span class="numero-att">{{ numero_attestation }}</span></span>
+      <span>Date d'émission : {{ date_emission }}</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

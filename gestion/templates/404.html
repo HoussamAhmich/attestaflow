@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttestaFlow — Page introuvable</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--s:#4a7c59;--sl:#e8f0eb;--sd:#2d4f38;--ink:#0f0f0f;--off:#f7f6f3;--white:#ffffff;--border:#e0e0d8;--muted:#888880;}
+    html,body{width:100%;min-height:100vh;font-family:'Inter',sans-serif;background:var(--off);color:var(--ink);display:flex;align-items:center;justify-content:center;}
+    .container{text-align:center;padding:40px 20px;max-width:500px;}
+    .code{font-size:120px;font-weight:900;color:var(--s);line-height:1;letter-spacing:-4px;margin-bottom:0;}
+    .title{font-size:24px;font-weight:800;color:var(--ink);margin-bottom:12px;letter-spacing:-0.5px;}
+    .sub{font-size:14px;color:var(--muted);margin-bottom:32px;line-height:1.6;}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:8px;background:var(--ink);color:white;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-decoration:none;transition:all 0.2s;position:relative;overflow:hidden;}
+    .btn::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .btn:hover::after{transform:scaleX(1);}
+    .btn span{position:relative;z-index:1;}
+    .logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:32px;}
+    .logo-sq{width:40px;height:40px;background:var(--s);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .logo-sq svg{width:20px;height:20px;fill:white;}
+    .logo-name{font-size:20px;font-weight:700;color:var(--ink);}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:2"/></svg></div>
+      <div class="logo-name">AttestaFlow</div>
+    </div>
+    <div class="code">404</div>
+    <div class="title">Page introuvable</div>
+    <div class="sub">La page que vous cherchez n'existe pas ou a été déplacée.<br>Vérifiez l'URL ou retournez à l'accueil.</div>
+    <a href="/dashboard/" class="btn"><span>← Retour au dashboard</span></a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttestaFlow — Vérification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--s:#4a7c59;--sl:#e8f0eb;--sd:#2d4f38;--ink:#0f0f0f;--off:#f7f6f3;--white:#ffffff;--border:#e0e0d8;--muted:#888880;}
+    html,body{width:100%;min-height:100vh;font-family:'Inter',sans-serif;background:var(--off);color:var(--ink);}
+    .sidebar{position:fixed;top:0;left:0;height:100vh;width:248px;background:#0f0f0f;border-right:1px solid #1e1e1e;display:flex;flex-direction:column;z-index:100;}
+    .sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--s);}
+    .brand{padding:26px 20px 22px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:11px;}
+    .brand-sq{width:36px;height:36px;background:var(--s);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .brand-sq svg{width:17px;height:17px;fill:white;}
+    .brand-name{font-size:16px;font-weight:700;color:white;}
+    .nav{padding:16px 12px;flex:1;overflow-y:auto;}
+    .nav-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.16em;padding:0 8px;margin:18px 0 7px;}
+    .nav-lbl:first-child{margin-top:0;}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;color:rgba(255,255,255,0.45);font-size:13px;font-weight:500;text-decoration:none;margin-bottom:2px;transition:all 0.15s;position:relative;overflow:hidden;}
+    .nav-item::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.04);transform:scaleX(0);transform-origin:left;transition:transform 0.2s;}
+    .nav-item:hover::before{transform:scaleX(1);}
+    .nav-item:hover{color:rgba(255,255,255,0.85);}
+    .nav-item.active{background:rgba(74,124,89,0.18);color:white;border:1px solid rgba(74,124,89,0.25);}
+    .nav-item.active::after{content:'';position:absolute;left:0;top:22%;bottom:22%;width:2.5px;background:var(--s);border-radius:0 2px 2px 0;}
+    .nav-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;}
+    .nav-badge{margin-left:auto;background:var(--s);color:white;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;}
+    .nav-badge.red{background:#ef4444;}
+    .sidebar-foot{padding:12px;border-top:1px solid #1e1e1e;}
+    .user-card{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);}
+    .avatar{width:34px;height:34px;border-radius:50%;background:var(--s);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+    .uname{font-size:13px;font-weight:600;color:white;}
+    .urole{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:2px;text-transform:uppercase;}
+    .urole.agent{background:rgba(255,182,39,0.15);color:#e5a800;border:1px solid rgba(255,182,39,0.2);}
+    .urole.admin{background:rgba(74,124,89,0.2);color:var(--s);border:1px solid rgba(74,124,89,0.3);}
+    .urole.beneficiaire{background:rgba(74,124,89,0.12);color:var(--s);border:1px solid rgba(74,124,89,0.2);}
+    .main{margin-left:248px;padding:36px 40px;min-height:100vh;}
+    .bc{font-size:11px;color:var(--muted);margin-bottom:10px;}
+    .bc a{color:var(--muted);text-decoration:none;} .bc a:hover{color:var(--s);}
+    .page-h{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-0.7px;margin-bottom:28px;}
+    .result-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:32px;max-width:600px;}
+    .result-valid{border-left:4px solid var(--s);}
+    .result-invalid{border-left:4px solid #ef4444;}
+    .result-annulee{border-left:4px solid #f59332;}
+    .result-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+    .result-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .ri-valid{background:var(--sl);}
+    .ri-invalid{background:#fef2f2;}
+    .ri-annulee{background:#fff3e8;}
+    .result-icon svg{width:24px;height:24px;fill:none;stroke-width:2;}
+    .ri-valid svg{stroke:var(--s);}
+    .ri-invalid svg{stroke:#ef4444;}
+    .ri-annulee svg{stroke:#f59332;}
+    .result-title{font-size:20px;font-weight:800;color:var(--ink);}
+    .result-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+    .result-row{display:flex;flex-direction:column;gap:5px;}
+    .result-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+    .result-val{font-size:14px;font-weight:600;color:var(--ink);background:var(--off);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+    .result-num{font-family:monospace;font-size:11px;background:var(--off);border:1px solid var(--border);padding:6px 12px;border-radius:6px;color:var(--muted);margin-top:16px;word-break:break-all;}
+    .btn-back{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;background:var(--ink);color:white;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-decoration:none;margin-top:20px;position:relative;overflow:hidden;}
+    .btn-back::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .btn-back:hover::after{transform:scaleX(1);}
+    .btn-back span{position:relative;z-index:1;}
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand"><div class="brand-sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:2"/></svg></div><div class="brand-name">AttestaFlow</div></div>
+  <div class="nav">
+    <div class="nav-lbl">Menu</div>
+    <a href="/dashboard/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+
+    {% if role == 'beneficiaire' %}
+      <a href="/demande/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Nouvelle demande</a>
+      <a href="/liste/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Mes demandes<span class="nav-badge">{{ demandes_count }}</span></a>
+      <a href="/mes-attestations/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Mes attestations</a>
+      <a href="/verifier-page/" class="nav-item active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation</a>
+      <a href="/aide/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Aide</a>
+    {% endif %}
+
+    {% if role == 'agent' %}
+      <a href="/liste/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Toutes les demandes<span class="nav-badge">{{ demandes_count }}</span></a>
+      <a href="/admin-attestations/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Attestations</a>
+      <a href="/journal/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>Journal des actions</a>
+      <a href="/admin-stats/" class="nav-item"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Statistiques</a>
+      <a href="/verifier-page/" class="nav-item active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation</a>
+    {% endif %}
+
+    {% if role == 'admin' %}
+      <a href="/admin-stats/" class="nav-item"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Statistiques</a>
+      <a href="/admin-users/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Utilisateurs</a>
+      <a href="/admin-demandes/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Demandes<span class="nav-badge red">{{ demandes_count }}</span></a>
+      <a href="/admin-attestations/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Attestations</a>
+      <a href="/journal/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>Journal des actions</a>
+      <a href="/verifier-page/" class="nav-item active"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation</a>
+      <a href="/parametres/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Paramètres</a>
+    {% endif %}
+
+    <div class="nav-lbl">Compte</div>
+    <a href="/profil/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mon profil</a>
+    <a href="/logout/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Déconnexion</a>
+  </div>
+  <div class="sidebar-foot">
+    <div class="user-card">
+      <div class="avatar">{{ user.username|first|upper }}</div>
+      <div>
+        <div class="uname">{{ user.username }}</div>
+        <span class="urole {{ role }}">{{ role }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="bc"><a href="/dashboard/">Dashboard</a> › Vérification d'attestation</div>
+  <div class="page-h">Vérification d'attestation</div>
+
+  {% if valide %}
+  <div class="result-card result-valid">
+    <div class="result-header">
+      <div class="result-icon ri-valid">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <div class="result-title">✅ Attestation valide</div>
+        <div class="result-sub">Ce document est authentique et valide</div>
+      </div>
+    </div>
+    <div class="result-grid">
+      <div class="result-row"><span class="result-lbl">Nom de l'étudiant</span><div class="result-val">{{ nom }}</div></div>
+      <div class="result-row"><span class="result-lbl">Type</span><div class="result-val">Attestation scolaire</div></div>
+      <div class="result-row"><span class="result-lbl">Filière</span><div class="result-val">{{ filiere }}</div></div>
+      <div class="result-row"><span class="result-lbl">Niveau</span><div class="result-val">{{ niveau }}</div></div>
+      <div class="result-row"><span class="result-lbl">Année universitaire</span><div class="result-val">{{ annee }}</div></div>
+      <div class="result-row"><span class="result-lbl">Date d'émission</span><div class="result-val">{{ date_emission|date:"d/m/Y"|default:"—" }}</div></div>
+    </div>
+    <div class="result-num">N° {{ numero }}</div>
+    <a href="/dashboard/" class="btn-back"><span>← Retour au dashboard</span></a>
+  </div>
+
+  {% elif annulee %}
+  <div class="result-card result-annulee">
+    <div class="result-header">
+      <div class="result-icon ri-annulee">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div>
+        <div class="result-title">⚠️ Attestation annulée</div>
+        <div class="result-sub">Ce document a été annulé et n'est plus valide</div>
+      </div>
+    </div>
+    <a href="/dashboard/" class="btn-back"><span>← Retour au dashboard</span></a>
+  </div>
+
+  {% else %}
+  <div class="result-card result-invalid">
+    <div class="result-header">
+      <div class="result-icon ri-invalid">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <div>
+        <div class="result-title">❌ Attestation introuvable</div>
+        <div class="result-sub">Aucune attestation ne correspond à ce numéro</div>
+      </div>
+    </div>
+    <a href="/verifier-page/" class="btn-back"><span>← Réessayer</span></a>
+  </div>
+  {% endif %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttestaFlow — Vérification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--s:#1a5c2a;--sl:#e8f5ec;--ink:#0f0f0f;--off:#f5f5f5;--white:#fff;--border:#e0e0d8;--muted:#888880;}
+    html,body{width:100%;min-height:100vh;font-family:'Inter',sans-serif;background:var(--off);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 16px;}
+
+    .card{background:var(--white);border-radius:24px;padding:36px 24px 28px;max-width:400px;width:100%;box-shadow:0 4px 30px rgba(0,0,0,0.08);text-align:center;}
+
+    /* Icône cercle */
+    .status-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+    .status-circle.valid{background:var(--sl);border:3px solid var(--s);}
+    .status-circle.invalid{background:#fef2f2;border:3px solid #ef4444;}
+    .status-circle.annulee{background:#fff3e8;border:3px solid #f59332;}
+    .status-circle svg{width:40px;height:40px;}
+
+    /* Titre */
+    .status-title{font-size:22px;font-weight:800;margin-bottom:8px;}
+    .status-title.valid{color:var(--s);}
+    .status-title.invalid{color:#ef4444;}
+    .status-title.annulee{color:#f59332;}
+
+    .status-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+
+    /* Badge officiel */
+    .badge-officiel{display:inline-flex;align-items:center;gap:7px;background:var(--sl);border:1.5px solid var(--s);border-radius:30px;padding:8px 18px;font-size:13px;font-weight:700;color:var(--s);margin-bottom:28px;}
+    .badge-officiel svg{width:16px;height:16px;stroke:var(--s);fill:none;stroke-width:2.5;}
+
+    /* Tableau infos */
+    .info-table{width:100%;border-collapse:collapse;text-align:left;}
+    .info-table tr{border-bottom:1px solid var(--border);}
+    .info-table tr:last-child{border-bottom:none;}
+    .info-table td{padding:12px 8px;font-size:13px;}
+    .info-table td:first-child{color:var(--muted);font-weight:600;width:45%;}
+    .info-table td:last-child{color:var(--ink);font-weight:700;}
+
+    /* Numéro */
+    .num-section{margin-top:20px;padding-top:16px;border-top:1px dashed var(--border);}
+    .num-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;}
+    .num-val{font-size:11px;font-family:monospace;color:var(--muted);word-break:break-all;line-height:1.6;}
+
+    /* Footer */
+    .footer{margin-top:28px;text-align:center;font-size:11px;color:var(--muted);}
+    .footer img{width:80px;margin-bottom:6px;opacity:0.6;}
+    .footer strong{color:var(--s);}
+
+    /* Invalid/annulée — pas de tableau */
+    .error-card{background:var(--white);border-radius:24px;padding:48px 24px;max-width:400px;width:100%;box-shadow:0 4px 30px rgba(0,0,0,0.08);text-align:center;}
+  </style>
+</head>
+<body>
+
+{% if valide %}
+<div class="card">
+
+  <!-- Cercle vert -->
+  <div class="status-circle valid">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#1a5c2a" stroke-width="2.5">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+  </div>
+
+  <div class="status-title valid">Attestation Valide ✓</div>
+  <div class="status-sub">Ce document est authentique et<br>a été émis par l'EMSI Rabat.</div>
+
+  <!-- Badge officiel -->
+  <div class="badge-officiel">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    Document officiel vérifié
+  </div>
+
+  <!-- Tableau infos -->
+  <table class="info-table">
+    <tr>
+      <td>Nom complet</td>
+      <td>{{ nom }}</td>
+    </tr>
+    <tr>
+      <td>Type</td>
+      <td>{{ type_doc }}</td>
+    </tr>
+    <tr>
+      <td>Filière</td>
+      <td>{{ filiere }}</td>
+    </tr>
+    <tr>
+      <td>Niveau</td>
+      <td>{{ niveau }}</td>
+    </tr>
+    <tr>
+      <td>Année universitaire</td>
+      <td>{{ annee }}</td>
+    </tr>
+    <tr>
+      <td>Date d'émission</td>
+      <td>{{ date_emission|date:"d/m/Y" }}</td>
+    </tr>
+  </table>
+
+  <!-- Numéro -->
+  <div class="num-section">
+    <div class="num-lbl">Numéro d'attestation</div>
+    <div class="num-val">{{ numero }}</div>
+  </div>
+
+  <div class="footer">
+    Vérifié par <strong>AttestaFlow</strong> — EMSI Rabat
+  </div>
+</div>
+
+{% elif annulee %}
+<div class="error-card">
+  <div class="status-circle annulee">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#f59332" stroke-width="2.5">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  </div>
+  <div class="status-title annulee">Attestation Annulée</div>
+  <div class="status-sub">Ce document a été annulé<br>et n'est plus valide.</div>
+  <div class="footer">Vérifié par <strong>AttestaFlow</strong> — EMSI Rabat</div>
+</div>
+
+{% else %}
+<div class="error-card">
+  <div class="status-circle invalid">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="15" y1="9" x2="9" y2="15"/>
+      <line x1="9" y1="9" x2="15" y2="15"/>
+    </svg>
+  </div>
+  <div class="status-title invalid">Attestation Introuvable</div>
+  <div class="status-sub">Aucune attestation ne correspond<br>à ce numéro.</div>
+  <div class="footer">Vérifié par <strong>AttestaFlow</strong> — EMSI Rabat</div>
+</div>
+{% endif %}
+
+</body>
+</html>

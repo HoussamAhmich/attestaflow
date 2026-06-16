@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttestaFlow Admin — Utilisateurs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--s:#4a7c59;--sl:#e8f0eb;--sd:#2d4f38;--ink:#0f0f0f;--off:#f7f6f3;--white:#fff;--border:#e0e0d8;--muted:#888880;--red:#ef4444;--amber:#f59e0b;}
+    html,body{width:100%;min-height:100vh;font-family:'Inter',sans-serif;background:var(--off);color:var(--ink);}
+    .sidebar{position:fixed;top:0;left:0;height:100vh;width:256px;background:var(--ink);display:flex;flex-direction:column;z-index:100;}
+    .sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--s),#6aab7a);}
+    .brand{padding:28px 22px 20px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:12px;}
+    .brand-sq{width:38px;height:38px;background:var(--s);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.2s;}
+    .brand-sq:hover{transform:rotate(-8deg);}
+    .brand-sq svg{width:18px;height:18px;fill:white;}
+    .brand-name{font-size:15px;font-weight:700;color:white;}
+    .brand-badge{font-size:9px;font-weight:700;background:var(--s);color:white;padding:1px 6px;border-radius:3px;width:fit-content;margin-top:2px;letter-spacing:0.08em;text-transform:uppercase;}
+    .nav{padding:16px 12px;flex:1;overflow-y:auto;}
+    .nav-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,0.22);text-transform:uppercase;letter-spacing:0.16em;padding:0 8px;margin:18px 0 7px;}
+    .nav-lbl:first-child{margin-top:0;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:rgba(255,255,255,0.45);font-size:13px;font-weight:500;text-decoration:none;margin-bottom:2px;transition:all 0.15s;position:relative;overflow:hidden;}
+    .nav-item::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.04);transform:scaleX(0);transform-origin:left;transition:transform 0.2s;}
+    .nav-item:hover::before{transform:scaleX(1);}
+    .nav-item:hover{color:rgba(255,255,255,0.85);}
+    .nav-item.active{background:rgba(74,124,89,0.2);color:white;border:1px solid rgba(74,124,89,0.3);}
+    .nav-item.active::after{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:var(--s);border-radius:0 2px 2px 0;}
+    .nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;transition:transform 0.2s;}
+    .nav-item:hover svg{transform:translateX(2px);}
+    .nav-badge{margin-left:auto;background:rgba(74,124,89,0.3);color:#a0d4b0;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;}
+    .nav-badge.red{background:rgba(239,68,68,0.2);color:#fca5a5;}
+    .sidebar-foot{padding:14px;border-top:1px solid #1e1e1e;}
+    .admin-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(74,124,89,0.12);border:1px solid rgba(74,124,89,0.2);}
+    .admin-avatar{width:36px;height:36px;border-radius:50%;background:var(--s);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+    .admin-name{font-size:13px;font-weight:600;color:white;}
+    .admin-role{font-size:9px;font-weight:700;color:var(--s);text-transform:uppercase;letter-spacing:0.08em;margin-top:1px;}
+    .main{margin-left:256px;padding:36px 40px;min-height:100vh;}
+    .topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;}
+    .page-title{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-0.6px;}
+    .page-sub{font-size:13px;color:var(--muted);margin-top:5px;}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+    .stat{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+    .stat:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.07);}
+    .stat::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%;}
+    .s1::after{background:var(--s);} .s2::after{background:#06b6d4;} .s3::after{background:var(--amber);} .s4::after{background:var(--red);}
+    .stat-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+    .stat-ico svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+    .i1{background:var(--sl);color:var(--s);} .i2{background:#e0f7fa;color:#0891b2;} .i3{background:#fff8e6;color:var(--amber);} .i4{background:#fef2f2;color:var(--red);}
+    .stat-val{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-1px;line-height:1;}
+    .stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;font-weight:500;}
+    .toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+    .search-wrap{display:flex;align-items:center;gap:8px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;flex:1;max-width:340px;transition:all 0.2s;}
+    .search-wrap:focus-within{border-color:var(--s);box-shadow:0 0 0 3px rgba(74,124,89,0.1);}
+    .search-wrap svg{width:14px;height:14px;stroke:var(--muted);fill:none;flex-shrink:0;transition:stroke 0.2s;}
+    .search-wrap:focus-within svg{stroke:var(--s);}
+    .search-wrap input{border:none;outline:none;font-size:13px;color:var(--ink);background:transparent;width:100%;font-family:'Inter',sans-serif;}
+    .search-wrap input::placeholder{color:#ccc;}
+    .role-filter{display:flex;gap:6px;}
+    .rf-tag{padding:7px 13px;border-radius:6px;font-size:11px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+    .rf-tag:hover{border-color:var(--s);color:var(--s);}
+    .rf-tag.active{border-color:var(--s);background:var(--sl);color:var(--sd);}
+    .card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .card-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:13px;font-weight:700;color:var(--ink);}
+    .card-count{font-size:11px;color:var(--muted);background:var(--off);border:1px solid var(--border);padding:3px 10px;border-radius:20px;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;padding:10px 24px;text-align:left;background:#fafaf8;border-bottom:1px solid var(--border);}
+    td{padding:14px 24px;font-size:13px;border-bottom:1px solid #f5f5f2;vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:#f8faf8;}
+    .user-cell{display:flex;align-items:center;gap:12px;}
+    .u-avatar{width:34px;height:34px;border-radius:50%;background:var(--sl);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--sd);flex-shrink:0;}
+    .u-name{font-size:13px;font-weight:600;color:var(--ink);}
+    .u-email{font-size:11px;color:var(--muted);margin-top:1px;}
+    .role-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+    .rb-admin{background:var(--sl);color:var(--sd);border:1px solid #b8d4c0;}
+    .rb-agent{background:#fff8e6;color:#92690a;border:1px solid #f5d98a;}
+    .rb-benef{background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;}
+    .actions-cell{display:flex;align-items:center;gap:6px;}
+    .btn-sm{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;text-decoration:none;}
+    .btn-role{background:var(--sl);color:var(--sd);border:1px solid #b8d4c0;}
+    .btn-role:hover{background:#d0e8d8;transform:translateY(-1px);}
+    .btn-del{background:#fef2f2;color:var(--red);border:1px solid #fecaca;}
+    .btn-del:hover{background:#fee2e2;transform:translateY(-1px);}
+    .btn-sm svg{width:11px;height:11px;stroke:currentColor;fill:none;}
+    /* MODALS */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+    .modal-bg.show{display:flex;}
+    .modal{background:var(--white);border-radius:14px;padding:28px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.15);transform:scale(0.95);opacity:0;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);}
+    .modal-bg.show .modal{transform:scale(1);opacity:1;}
+    .modal-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+    .role-options{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+    .role-opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:9px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.15s;}
+    .role-opt:hover{border-color:var(--s);background:var(--sl);}
+    .role-opt.selected{border-color:var(--s);background:var(--sl);}
+    .role-opt-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .role-opt-ico svg{width:15px;height:15px;stroke:currentColor;fill:none;}
+    .role-opt-name{font-size:13px;font-weight:600;color:var(--ink);}
+    .role-opt-desc{font-size:11px;color:var(--muted);margin-top:1px;}
+    .modal-btns{display:flex;gap:8px;}
+    .modal-cancel{flex:1;padding:10px;border:1.5px solid var(--border);border-radius:8px;background:transparent;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+    .modal-cancel:hover{border-color:var(--ink);color:var(--ink);}
+    .modal-save{flex:2;padding:10px;border:none;border-radius:8px;background:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:white;cursor:pointer;transition:background 0.15s;position:relative;overflow:hidden;}
+    .modal-save::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .modal-save:hover::after{transform:scaleX(1);}
+    .modal-save span{position:relative;z-index:1;}
+    .modal-del-ico{width:48px;height:48px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+    .modal-del-ico svg{width:22px;height:22px;stroke:var(--red);fill:none;}
+    .modal-confirm-del{flex:2;padding:10px;border:none;border-radius:8px;background:var(--red);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:white;cursor:pointer;transition:background 0.15s;}
+    .modal-confirm-del:hover{background:#dc2626;}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:white;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.16,1,0.3,1);z-index:999;border-left:3px solid var(--s);}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .toast svg{width:15px;height:15px;stroke:var(--s);fill:none;}
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:2"/></svg></div>
+    <div><div class="brand-name">AttestaFlow</div><div class="brand-badge">Admin</div></div>
+  </div>
+  <div class="nav">
+    <div class="nav-lbl">Menu</div>
+    <a href="/dashboard/" class="nav-item {% if request.path == '/dashboard/' %}active{% endif %}"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    {% if role == 'beneficiaire' %}
+      <a href="/demande/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Nouvelle demande</a>
+      <a href="/liste/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Mes demandes<span class="nav-badge">{{ demandes_count }}</span></a>
+      <a href="/mes-attestations/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Mes attestations</a>
+      <a href="/verifier-page/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation</a>
+      <a href="/aide/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Aide</a>
+    {% endif %}
+    {% if role == 'agent' %}
+      <a href="/liste/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Toutes les demandes<span class="nav-badge">{{ demandes_count }}</span></a>
+      <a href="/admin-attestations/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Attestations</a>
+      <a href="/journal/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>Journal des actions</a>
+      <a href="/admin-stats/" class="nav-item"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Statistiques</a>
+      <a href="/verifier-page/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation</a>
+    {% endif %}
+    {% if role == 'admin' %}
+      <a href="/admin-stats/" class="nav-item"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Statistiques</a>
+      <a href="/admin-users/" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Utilisateurs</a>
+      <a href="/admin-demandes/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Demandes<span class="nav-badge red">{{ demandes_count }}</span></a>
+      <a href="/admin-attestations/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Attestations</a>
+      <a href="/journal/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>Journal des actions</a>
+      <a href="/verifier-page/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation</a>
+      <a href="/parametres/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Paramètres</a>
+    {% endif %}
+    <div class="nav-lbl">Compte</div>
+    <a href="/profil/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mon profil</a>
+    <a href="/logout/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Déconnexion</a>
+  </div>
+  <div class="sidebar-foot">
+    <div class="admin-card">
+      <div class="admin-avatar">{{ user.username|first|upper }}</div>
+      <div><div class="admin-name">{{ user.username }}</div><div class="admin-role">Administrateur</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal changer rôle -->
+<div class="modal-bg" id="roleModal">
+  <div class="modal">
+    <div class="modal-title">Changer le rôle</div>
+    <div class="modal-sub" id="modalUserName">Utilisateur sélectionné</div>
+    <div class="role-options">
+      <div class="role-opt" data-role="beneficiaire" onclick="selectRole(this)">
+        <div class="role-opt-ico" style="background:#f0f9ff;color:#0369a1"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div><div class="role-opt-name">Bénéficiaire</div><div class="role-opt-desc">Soumet des demandes, télécharge ses attestations</div></div>
+      </div>
+      <div class="role-opt" data-role="agent" onclick="selectRole(this)">
+        <div class="role-opt-ico" style="background:#fff8e6;color:#92690a"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div><div class="role-opt-name">Agent administratif</div><div class="role-opt-desc">Valide, refuse et gère les demandes</div></div>
+      </div>
+      <div class="role-opt" data-role="admin" onclick="selectRole(this)">
+        <div class="role-opt-ico" style="background:var(--sl);color:var(--sd)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div>
+        <div><div class="role-opt-name">Administrateur</div><div class="role-opt-desc">Accès complet à toute la plateforme</div></div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="document.getElementById('roleModal').classList.remove('show')">Annuler</button>
+      <button class="modal-save" onclick="saveRole()"><span>Enregistrer le rôle</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal supprimer utilisateur -->
+<div class="modal-bg" id="delModal">
+  <div class="modal">
+    <div class="modal-del-ico"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></div>
+    <div class="modal-title">Supprimer l'utilisateur</div>
+    <div class="modal-sub" id="delUserName">Cet utilisateur sera définitivement supprimé.</div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;font-size:12px;color:#b91c1c;margin-bottom:20px;">
+      ⚠️ Toutes ses demandes et attestations seront aussi supprimées. Cette action est irréversible.
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="document.getElementById('delModal').classList.remove('show')">Annuler</button>
+      <button class="modal-confirm-del" id="delConfirmBtn">🗑️ Supprimer définitivement</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span id="toastMsg"></span></div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Gestion des utilisateurs</div>
+      <div class="page-sub">{{ utilisateurs|length }} utilisateurs enregistrés</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat s1"><div class="stat-ico i1"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-val">{{ total_users }}</div><div class="stat-lbl">Total utilisateurs</div></div>
+    <div class="stat s2"><div class="stat-ico i2"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="stat-val">{{ total_beneficiaires }}</div><div class="stat-lbl">Bénéficiaires</div></div>
+    <div class="stat s3"><div class="stat-ico i3"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="stat-val">{{ total_agents }}</div><div class="stat-lbl">Agents</div></div>
+    <div class="stat s4"><div class="stat-ico i4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div><div class="stat-val">{{ total_admins }}</div><div class="stat-lbl">Administrateurs</div></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap"><svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="userSearch" placeholder="Rechercher un utilisateur..."></div>
+    <div class="role-filter">
+      <button class="rf-tag active" data-r="all" onclick="filterRole(this)">Tous</button>
+      <button class="rf-tag" data-r="beneficiaire" onclick="filterRole(this)">Bénéficiaires</button>
+      <button class="rf-tag" data-r="agent" onclick="filterRole(this)">Agents</button>
+      <button class="rf-tag" data-r="admin" onclick="filterRole(this)">Admins</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">Utilisateurs</div>
+      <div class="card-count" id="userCount">{{ utilisateurs|length }} utilisateurs</div>
+    </div>
+    <table id="userTable">
+      <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Demandes</th><th>Inscrit le</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for u in utilisateurs %}
+        <tr data-role="{{ u.role }}">
+          <td><div class="user-cell"><div class="u-avatar">{{ u.nom|first|upper }}</div><div><div class="u-name">{{ u.nom }}</div><div class="u-email">{{ u.email }}</div></div></div></td>
+          <td><span class="role-badge {% if u.role == 'admin' %}rb-admin{% elif u.role == 'agent' %}rb-agent{% else %}rb-benef{% endif %}">{{ u.role }}</span></td>
+          <td style="color:var(--muted);font-weight:600">{{ u.demande_set.count }}</td>
+          <td style="color:var(--muted)">{{ u.user.date_joined|date:"d/m/Y" }}</td>
+          <td>
+            <div class="actions-cell">
+              <button class="btn-sm btn-role" onclick="openRoleModal('{{ u.id }}','{{ u.nom }}','{{ u.role }}')">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Changer rôle
+              </button>
+              <button class="btn-sm btn-del" onclick="openDelModal('{{ u.id }}','{{ u.nom }}')">
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>Supprimer
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted)">Aucun utilisateur</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+document.getElementById('userSearch').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  const rows = document.querySelectorAll('#userTable tbody tr');
+  let v = 0;
+  rows.forEach(r => { const m = r.textContent.toLowerCase().includes(q); r.style.display = m ? '' : 'none'; if(m) v++; });
+  document.getElementById('userCount').textContent = `${v} utilisateur${v!==1?'s':''}`;
+});
+
+function filterRole(btn) {
+  document.querySelectorAll('.rf-tag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const r = btn.dataset.r;
+  const rows = document.querySelectorAll('#userTable tbody tr');
+  let v = 0;
+  rows.forEach(row => { const show = r==='all'||row.dataset.role===r; row.style.display=show?'':'none'; if(show)v++; });
+  document.getElementById('userCount').textContent = `${v} utilisateur${v!==1?'s':''}`;
+}
+
+// ── MODAL ROLE
+let currentUserId = null;
+function openRoleModal(id, nom, role) {
+  currentUserId = id;
+  document.getElementById('modalUserName').textContent = `Modifier le rôle de ${nom}`;
+  document.querySelectorAll('.role-opt').forEach(o => o.classList.toggle('selected', o.dataset.role === role));
+  document.getElementById('roleModal').classList.add('show');
+}
+function selectRole(el) {
+  document.querySelectorAll('.role-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+document.getElementById('roleModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('show'); });
+
+function saveRole() {
+  const selected = document.querySelector('.role-opt.selected');
+  if(!selected || !currentUserId) return;
+  const role = selected.dataset.role;
+  fetch(`/admin-change-role/${currentUserId}/`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+    body: JSON.stringify({role})
+  }).then(() => {
+    document.getElementById('roleModal').classList.remove('show');
+    showToast(`Rôle mis à jour : ${role}`);
+    setTimeout(() => location.reload(), 1200);
+  }).catch(() => showToast('Erreur'));
+}
+
+// ── MODAL SUPPRIMER
+let delUserId = null;
+function openDelModal(id, nom) {
+  delUserId = id;
+  document.getElementById('delUserName').textContent = `Supprimer "${nom}" — cette action est irréversible.`;
+  document.getElementById('delModal').classList.add('show');
+}
+document.getElementById('delModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('show'); });
+
+document.getElementById('delConfirmBtn').addEventListener('click', function() {
+  if(!delUserId) return;
+  fetch(`/admin-supprimer-user/${delUserId}/`, {
+    method: 'POST',
+    headers: {'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json'},
+  }).then(res => {
+    if(res.ok || res.redirected) {
+      document.getElementById('delModal').classList.remove('show');
+      showToast('Utilisateur supprimé');
+      setTimeout(() => location.reload(), 1200);
+    }
+  }).catch(() => {
+    window.location.href = `/admin-supprimer-user/${delUserId}/`;
+  });
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+function getCookie(n) {
+  const v = document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+document.querySelectorAll('#userTable tbody tr').forEach((r,i) => {
+  r.style.opacity='0'; r.style.transform='translateY(6px)';
+  r.style.transition=`opacity 0.3s ${i*0.04}s,transform 0.3s ${i*0.04}s`;
+  setTimeout(()=>{r.style.opacity='1';r.style.transform='translateY(0)';},60+i*35);
+});
+</script>
+</body>
+</html>

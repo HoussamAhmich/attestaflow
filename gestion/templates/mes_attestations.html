@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttestaFlow — Mes attestations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--s:#4a7c59;--sl:#e8f0eb;--sd:#2d4f38;--ink:#0f0f0f;--off:#f7f6f3;--white:#ffffff;--border:#e0e0d8;--muted:#888880;}
+    html,body{width:100%;min-height:100vh;font-family:'Inter',sans-serif;background:var(--off);color:var(--ink);}
+    .sidebar{position:fixed;top:0;left:0;height:100vh;width:248px;background:var(--ink);border-right:1px solid #1e1e1e;display:flex;flex-direction:column;z-index:100;}
+    .sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--s);}
+    .brand{padding:26px 20px 22px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:11px;}
+    .brand-sq{width:36px;height:36px;background:var(--s);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .brand-sq svg{width:17px;height:17px;fill:white;}
+    .brand-name{font-size:16px;font-weight:700;color:white;}
+    .nav{padding:16px 12px;flex:1;overflow-y:auto;}
+    .nav-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.16em;padding:0 8px;margin:18px 0 7px;}
+    .nav-lbl:first-child{margin-top:0;}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;color:rgba(255,255,255,0.45);font-size:13px;font-weight:500;text-decoration:none;margin-bottom:2px;transition:all 0.15s;position:relative;overflow:hidden;}
+    .nav-item::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.04);transform:scaleX(0);transform-origin:left;transition:transform 0.2s;}
+    .nav-item:hover::before{transform:scaleX(1);}
+    .nav-item:hover{color:rgba(255,255,255,0.85);}
+    .nav-item.active{background:rgba(74,124,89,0.18);color:white;border:1px solid rgba(74,124,89,0.25);}
+    .nav-item.active::after{content:'';position:absolute;left:0;top:22%;bottom:22%;width:2.5px;background:var(--s);border-radius:0 2px 2px 0;}
+    .nav-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;}
+    .nav-badge{margin-left:auto;background:var(--s);color:white;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;}
+    .nav-badge.red{background:#ef4444;}
+    .sidebar-foot{padding:12px;border-top:1px solid #1e1e1e;}
+    .user-card{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);}
+    .avatar{width:34px;height:34px;border-radius:50%;background:var(--s);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+    .uname{font-size:13px;font-weight:600;color:white;}
+    .urole{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:2px;text-transform:uppercase;}
+    .urole.beneficiaire{background:rgba(74,124,89,0.12);color:var(--s);border:1px solid rgba(74,124,89,0.2);}
+    .main{margin-left:248px;padding:36px 40px;min-height:100vh;}
+    .bc{font-size:11px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+    .bc a{color:var(--muted);text-decoration:none;} .bc a:hover{color:var(--s);}
+    .page-h{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-0.7px;}
+    .page-s{font-size:13px;color:var(--muted);margin-top:5px;margin-bottom:28px;}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+    .att-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;transition:transform 0.2s,box-shadow 0.2s;opacity:0;transform:translateY(16px);}
+    .att-card.visible{opacity:1;transform:translateY(0);}
+    .att-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+    .att-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .att-ico{width:40px;height:40px;border-radius:10px;background:var(--sl);display:flex;align-items:center;justify-content:center;}
+    .att-ico svg{width:18px;height:18px;stroke:var(--s);fill:none;}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+    .bdot{width:5px;height:5px;border-radius:50%;}
+    .b-v{background:var(--sl);color:var(--sd);border:1px solid #b8d4c0;} .b-v .bdot{background:var(--s);}
+    .b-ann{background:#fff3e8;color:#9a4a00;border:1px solid #fdd8b0;} .b-ann .bdot{background:#f59332;}
+    .att-type{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+    .att-num{font-size:10px;font-family:monospace;color:var(--muted);background:var(--off);border:1px solid var(--border);padding:3px 8px;border-radius:5px;display:inline-block;margin-bottom:12px;}
+    .att-info{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
+    .att-row{display:flex;justify-content:space-between;font-size:12px;}
+    .att-lbl{color:var(--muted);}
+    .att-val{font-weight:600;color:var(--ink);}
+    .att-actions{display:flex;gap:8px;}
+    .btn-pdf{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:7px;background:var(--ink);color:white;font-size:12px;font-weight:700;text-decoration:none;flex:1;justify-content:center;position:relative;overflow:hidden;}
+    .btn-pdf::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .btn-pdf:hover::after{transform:scaleX(1);}
+    .btn-pdf span{position:relative;z-index:1;display:flex;align-items:center;gap:5px;}
+    .btn-pdf svg{width:13px;height:13px;stroke:currentColor;fill:none;}
+    .btn-verify{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:7px;background:var(--sl);color:var(--sd);font-size:12px;font-weight:700;text-decoration:none;border:1px solid #b8d4c0;flex:1;justify-content:center;}
+    .btn-verify:hover{background:#c8dfd0;}
+    .btn-verify svg{width:13px;height:13px;stroke:currentColor;fill:none;}
+    .empty-state{text-align:center;padding:80px 20px;}
+    .empty-ico{width:64px;height:64px;border-radius:14px;background:var(--sl);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+    .empty-ico svg{width:28px;height:28px;stroke:var(--s);fill:none;}
+    .empty-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .empty-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+    .btn-new{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;background:var(--ink);color:white;font-size:13px;font-weight:700;text-decoration:none;position:relative;overflow:hidden;}
+    .btn-new::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .btn-new:hover::after{transform:scaleX(1);}
+    .btn-new span{position:relative;z-index:1;display:flex;align-items:center;gap:7px;}
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="brand"><div class="brand-sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:2"/></svg></div><div class="brand-name">AttestaFlow</div></div>
+  <div class="nav">
+  <div class="nav-lbl">Menu</div>
+  <a href="/dashboard/" class="nav-item {% if request.path == '/dashboard/' %}active{% endif %}">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+  </a>
+
+  {% if role == 'beneficiaire' %}
+    <a href="/demande/" class="nav-item {% if request.path == '/demande/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Nouvelle demande
+    </a>
+    <a href="/liste/" class="nav-item {% if request.path == '/liste/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Mes demandes
+      <span class="nav-badge">{{ demandes_count }}</span>
+    </a>
+    <a href="/mes-attestations/" class="nav-item {% if request.path == '/mes-attestations/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Mes attestations
+    </a>
+    <a href="/verifier-page/" class="nav-item {% if request.path == '/verifier-page/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation
+    </a>
+    <a href="/aide/" class="nav-item {% if request.path == '/aide/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Aide
+    </a>
+  {% endif %}
+
+  {% if role == 'agent' %}
+    <a href="/liste/" class="nav-item {% if request.path == '/liste/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Toutes les demandes
+      <span class="nav-badge">{{ demandes_count }}</span>
+    </a>
+    <a href="/admin-attestations/" class="nav-item {% if request.path == '/admin-attestations/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Attestations
+    </a>
+    <a href="/journal/" class="nav-item {% if request.path == '/journal/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>Journal des actions
+    </a>
+    <a href="/admin-stats/" class="nav-item {% if request.path == '/admin-stats/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Statistiques
+    </a>
+    <a href="/verifier-page/" class="nav-item {% if request.path == '/verifier-page/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation
+    </a>
+  {% endif %}
+
+  {% if role == 'admin' %}
+    <a href="/admin-stats/" class="nav-item {% if request.path == '/admin-stats/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Statistiques
+    </a>
+    <a href="/admin-users/" class="nav-item {% if request.path == '/admin-users/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utilisateurs
+    </a>
+    <a href="/admin-demandes/" class="nav-item {% if request.path == '/admin-demandes/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Demandes
+      <span class="nav-badge red">{{ demandes_count }}</span>
+    </a>
+    <a href="/admin-attestations/" class="nav-item {% if request.path == '/admin-attestations/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Attestations
+    </a>
+    <a href="/journal/" class="nav-item {% if request.path == '/journal/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>Journal des actions
+    </a>
+    <a href="/verifier-page/" class="nav-item {% if request.path == '/verifier-page/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation
+    </a>
+    <a href="/parametres/" class="nav-item {% if request.path == '/parametres/' %}active{% endif %}">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Paramètres
+    </a>
+  {% endif %}
+
+  <div class="nav-lbl">Compte</div>
+  <a href="/profil/" class="nav-item {% if request.path == '/profil/' %}active{% endif %}">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mon profil
+  </a>
+  <a href="/logout/" class="nav-item">
+    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Déconnexion
+  </a>
+</div>
+  <div class="sidebar-foot"><div class="user-card"><div class="avatar">{{ user.username|first|upper }}</div><div><div class="uname">{{ user.username }}</div><span class="urole beneficiaire">bénéficiaire</span></div></div></div>
+</div>
+<div class="main">
+  <div class="bc"><a href="/dashboard/">Dashboard</a> › Mes attestations</div>
+  <div class="page-h">Mes attestations</div>
+  <div class="page-s">Toutes vos attestations générées</div>
+  {% if attestations %}
+  <div class="cards-grid">
+    {% for a in attestations %}
+    <div class="att-card">
+      <div class="att-header">
+        <div class="att-ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        {% if a.statut == 'valide' %}<span class="badge b-v"><span class="bdot"></span>Valide</span>
+        {% else %}<span class="badge b-ann"><span class="bdot"></span>Annulée</span>{% endif %}
+      </div>
+      <div class="att-type">{{ a.demande.type_document }}</div>
+      <div class="att-num">N° {{ a.numero|truncatechars:20 }}</div>
+      <div class="att-info">
+        <div class="att-row"><span class="att-lbl">Date d'émission</span><span class="att-val">{{ a.date_emission|date:"d/m/Y"|default:"—" }}</span></div>
+        <div class="att-row"><span class="att-lbl">Filière</span><span class="att-val">{{ a.demande.filiere|default:"—" }}</span></div>
+        <div class="att-row"><span class="att-lbl">Niveau</span><span class="att-val">{{ a.demande.niveau|default:"—" }}</span></div>
+        <div class="att-row"><span class="att-lbl">Année</span><span class="att-val">{{ a.demande.annee_universitaire|default:"—" }}</span></div>
+      </div>
+      {% if a.statut == 'valide' %}
+      <div class="att-actions">
+        <a href="/attestation/{{ a.demande.id }}/pdf/" class="btn-pdf"><span><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/></svg>Télécharger PDF</span></a>
+        <a href="/verifier-page/?numero={{ a.numero }}">Vérifier</a>
+      {% else %}
+      <div style="background:#fff3e8;border:1px solid #fdd8b0;border-radius:8px;padding:10px;text-align:center;font-size:12px;color:#9a4a00;font-weight:600;">⚠️ Attestation annulée</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-ico"><svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+    <div class="empty-title">Aucune attestation</div>
+    <div class="empty-sub">Soumettez une demande pour obtenir votre première attestation.</div>
+    <a href="/demande/" class="btn-new"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouvelle demande</span></a>
+  </div>
+  {% endif %}
+</div>
+<script>
+const io = new IntersectionObserver(e=>e.forEach((x,i)=>{if(x.isIntersecting){setTimeout(()=>x.target.classList.add('visible'),i*80);io.unobserve(x.target);}}),{threshold:0.1});
+document.querySelectorAll('.att-card').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

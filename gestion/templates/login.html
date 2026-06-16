@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttestaFlow — Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--s:#4a7c59;--sl:#e8f0eb;--sd:#2d4f38;--ink:#0f0f0f;--off:#f7f6f3;--white:#ffffff;--border:#e0e0d8;--muted:#888880;}
+    html,body{width:100%;height:100%;font-family:'Inter',sans-serif;background:var(--off);overflow:hidden;}
+    .layout{width:100%;height:100vh;display:grid;grid-template-columns:40% 1fr;}
+    .left{background:var(--ink);padding:56px 60px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+    .left::after{content:'';position:absolute;bottom:0;right:0;width:300px;height:300px;border-top:1px solid rgba(255,255,255,0.04);border-left:1px solid rgba(255,255,255,0.04);border-radius:300px 0 0 0;}
+    .corner{position:absolute;width:20px;height:20px;}
+    .corner.tl{top:20px;left:20px;border-top:1.5px solid rgba(255,255,255,0.12);border-left:1.5px solid rgba(255,255,255,0.12);}
+    .corner.br{bottom:20px;right:20px;border-bottom:1.5px solid rgba(255,255,255,0.12);border-right:1.5px solid rgba(255,255,255,0.12);}
+    .logo{display:flex;align-items:center;gap:12px;}
+    .logo-sq{width:38px;height:38px;background:var(--s);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:transform 0.3s,box-shadow 0.3s;}
+    .logo-sq:hover{transform:rotate(-6deg) scale(1.08);box-shadow:0 8px 24px rgba(74,124,89,0.4);}
+    .logo-sq svg{width:18px;height:18px;fill:white;}
+    .logo-name{font-size:17px;font-weight:700;color:white;}
+    .hero-label{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:20px;opacity:0;transform:translateY(12px);transition:all 0.6s 0.2s;}
+    .hero-title{font-size:clamp(48px,5vw,80px);font-weight:900;color:white;line-height:0.92;letter-spacing:-3px;text-transform:uppercase;margin-bottom:28px;opacity:0;transform:translateY(20px);transition:all 0.7s 0.35s,filter 0.3s;}
+    .hero-title em{font-style:normal;color:var(--s);}
+    .hero-desc{font-size:14px;color:rgba(255,255,255,0.38);line-height:1.75;max-width:380px;opacity:0;transform:translateY(12px);transition:all 0.6s 0.5s;}
+    .loaded .hero-label{opacity:1;transform:translateY(0);}
+    .loaded .hero-title{opacity:1;transform:translateY(0);}
+    .loaded .hero-desc{opacity:1;transform:translateY(0);}
+    .hero-title:hover{filter:drop-shadow(0 0 20px rgba(74,124,89,0.4));transform:translateY(-2px) !important;}
+    .bottom-row{display:flex;align-items:flex-end;justify-content:space-between;}
+    .metrics{display:flex;gap:40px;}
+    .metric-val{font-size:40px;font-weight:900;color:white;letter-spacing:-2px;line-height:1;}
+    .metric-val span{color:var(--s);}
+    .metric-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:0.12em;text-transform:uppercase;margin-top:4px;}
+    .vert-text{writing-mode:vertical-rl;font-size:9px;font-weight:600;color:rgba(255,255,255,0.12);letter-spacing:0.2em;text-transform:uppercase;}
+    .particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+    .particle{position:absolute;width:2px;height:2px;background:var(--s);border-radius:50%;opacity:0;animation:particleFade var(--d) var(--delay) infinite;}
+    @keyframes particleFade{0%{opacity:0;transform:translateY(0) scale(0)}20%{opacity:0.5}100%{opacity:0;transform:translateY(-80px) scale(1.5)}}
+    .right{background:var(--white);border-left:1px solid var(--border);padding:48px 44px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow-y:auto;}
+    .right::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.8s 0.3s cubic-bezier(0.16,1,0.3,1);}
+    .loaded .right::before{transform:scaleX(1);}
+    .form-eyebrow{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:28px;display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(8px);transition:all 0.5s 0.4s;}
+    .form-eyebrow::after{content:'';flex:1;height:0.5px;background:var(--border);}
+    .loaded .form-eyebrow{opacity:1;transform:translateY(0);}
+    .form-title{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-0.7px;margin-bottom:6px;opacity:0;transform:translateY(8px);transition:all 0.5s 0.5s;}
+    .loaded .form-title{opacity:1;transform:translateY(0);}
+    .form-sub{font-size:13px;color:var(--muted);margin-bottom:36px;opacity:0;transition:opacity 0.5s 0.55s;}
+    .loaded .form-sub{opacity:1;}
+    .field{margin-bottom:18px;opacity:0;transform:translateY(8px);transition:opacity 0.4s,transform 0.4s;}
+    .loaded .field{opacity:1;transform:translateY(0);}
+    .loaded .field-1{transition-delay:0.6s;}
+    .loaded .field-2{transition-delay:0.7s;}
+    .field-label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;transition:color 0.2s;}
+    .field.focused .field-label{color:var(--s);}
+    .field-wrap{position:relative;}
+    .field-wrap .field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:#ccc;fill:none;stroke-width:2;pointer-events:none;transition:stroke 0.2s;}
+    .field.focused .field-wrap .field-icon{stroke:var(--s);}
+    .field-input{width:100%;background:var(--off);border:1.5px solid var(--border);border-radius:8px;padding:13px 42px 13px 42px;font-size:14px;font-family:'Inter',sans-serif;color:var(--ink);outline:none;transition:all 0.2s;}
+    .field-input::placeholder{color:#bbb;}
+    .field-input:focus{border-color:var(--s);background:var(--sl);box-shadow:0 0 0 3px rgba(74,124,89,0.12);}
+    .pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#bbb;line-height:0;transition:color 0.2s;}
+    .pw-toggle:hover{color:var(--s);}
+    .pw-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;display:block;}
+    .error-box{background:#fef2f2;border:1.5px solid #fecaca;border-radius:8px;padding:12px 14px;font-size:13px;color:#b91c1c;margin-bottom:18px;display:flex;align-items:center;gap:8px;animation:shake 0.4s cubic-bezier(0.36,0.07,0.19,0.97);}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+    .error-box svg{width:14px;height:14px;flex-shrink:0;}
+    .btn-submit{width:100%;background:var(--ink);border:none;border-radius:8px;padding:15px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;letter-spacing:0.02em;margin-top:4px;position:relative;overflow:hidden;opacity:0;transform:translateY(8px);transition:opacity 0.4s 0.8s,transform 0.4s 0.8s;}
+    .loaded .btn-submit{opacity:1;transform:translateY(0);}
+    .btn-submit::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .btn-submit:hover::after{transform:scaleX(1);}
+    .btn-txt{position:relative;z-index:1;}
+    .btn-submit:active{transform:scale(0.98);}
+    .btn-submit.loading{pointer-events:none;}
+    .btn-submit.loading .btn-txt{opacity:0;}
+    .btn-submit.loading .btn-spinner{display:flex;}
+    .btn-spinner{display:none;position:absolute;inset:0;align-items:center;justify-content:center;z-index:2;}
+    .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.25);transform:scale(0);animation:rippleAnim 0.6s linear;pointer-events:none;z-index:3;}
+    @keyframes rippleAnim{to{transform:scale(4);opacity:0;}}
+    .form-foot{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--muted);opacity:0;transition:opacity 0.4s 0.9s;}
+    .loaded .form-foot{opacity:1;}
+    .form-foot a{color:var(--s);text-decoration:none;font-weight:600;position:relative;}
+    .form-foot a::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--s);transform:scaleX(0);transition:transform 0.2s;}
+    .form-foot a:hover::after{transform:scaleX(1);}
+    @media(max-width:768px){
+      .layout{grid-template-columns:1fr;}
+      .left{display:none;}
+      .right{padding:40px 28px;overflow-y:auto;}
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <div class="left">
+    <div class="particles" id="particles"></div>
+    <div class="corner tl"></div>
+    <div class="corner br"></div>
+    <div class="logo">
+      <div class="logo-sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:2"/></svg></div>
+      <div class="logo-name">AttestaFlow</div>
+    </div>
+    <div>
+      <div class="hero-label">Gestion d'attestations</div>
+      <div class="hero-title">GÉREZ<br>VOS<br><em>DOCS.</em></div>
+      <p class="hero-desc">Génération PDF, validation par rôle et vérification par QR code — tout en un.</p>
+    </div>
+    <div class="bottom-row">
+      <div class="metrics">
+        <div><div class="metric-val">0<span>3</span></div><div class="metric-lbl">Types docs</div></div>
+        <div><div class="metric-val">0<span>2</span></div><div class="metric-lbl">Rôles agents</div></div>
+        <div><div class="metric-val">QR</div><div class="metric-lbl">Vérification</div></div>
+      </div>
+      <div class="vert-text">ATTESTAFLOW © 2026</div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="form-eyebrow">Espace de connexion</div>
+    <div class="form-title">Bon retour 👋</div>
+    <div class="form-sub">Connectez-vous à votre espace personnel</div>
+
+    {% if error %}
+    <div class="error-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" id="loginForm">
+      {% csrf_token %}
+      <div class="field field-1">
+        <label class="field-label" for="usernameInput">Identifiant</label>
+        <div class="field-wrap">
+          <svg class="field-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input class="field-input" type="text" id="usernameInput" name="username" placeholder="Votre nom d'utilisateur" autocomplete="username" required autofocus>
+        </div>
+      </div>
+      <div class="field field-2">
+        <label class="field-label" for="pwInput">Mot de passe</label>
+        <div class="field-wrap">
+          <svg class="field-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input class="field-input" type="password" id="pwInput" name="password" placeholder="••••••••••••" autocomplete="current-password" required>
+          <button type="button" class="pw-toggle" id="pwToggle" title="Afficher / masquer">
+            <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="btn-txt">Se connecter →</span>
+        <div class="btn-spinner"><div class="spinner"></div></div>
+      </button>
+    </form>
+
+    <div class="form-foot">Pas de compte ? <a href="/register/">Créer un compte</a></div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', () => document.body.classList.add('loaded'));
+
+document.querySelectorAll('.field').forEach(f => {
+  const inp = f.querySelector('input');
+  if (!inp) return;
+  inp.addEventListener('focus', () => f.classList.add('focused'));
+  inp.addEventListener('blur',  () => f.classList.remove('focused'));
+});
+
+const pwInput  = document.getElementById('pwInput');
+const pwToggle = document.getElementById('pwToggle');
+const eyeIcon  = document.getElementById('eyeIcon');
+pwToggle.addEventListener('click', () => {
+  const show = pwInput.type === 'password';
+  pwInput.type = show ? 'text' : 'password';
+  eyeIcon.innerHTML = show
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+});
+
+document.getElementById('loginForm').addEventListener('submit', function() {
+  const btn = document.getElementById('submitBtn');
+  btn.classList.add('loading');
+  const rect   = btn.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.cssText = `width:${size}px;height:${size}px;left:${(rect.width-size)/2}px;top:${(rect.height-size)/2}px`;
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+});
+
+const container = document.getElementById('particles');
+for (let i = 0; i < 18; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.cssText = `left:${Math.random()*100}%;top:${60+Math.random()*40}%;--d:${3+Math.random()*4}s;--delay:${Math.random()*5}s;`;
+  container.appendChild(p);
+}
+
+const heroTitle = document.querySelector('.hero-title');
+document.querySelector('.left').addEventListener('mousemove', e => {
+  const r = document.querySelector('.left').getBoundingClientRect();
+  const x = ((e.clientX - r.left) / r.width  - 0.5) * 8;
+  const y = ((e.clientY - r.top)  / r.height - 0.5) * -8;
+  heroTitle.style.transform = `translateY(0) translateX(${x*0.5}px) translateY(${y*0.5}px)`;
+});
+document.querySelector('.left').addEventListener('mouseleave', () => {
+  heroTitle.style.transform = 'translateY(0)';
+});
+</script>
+</body>
+</html>

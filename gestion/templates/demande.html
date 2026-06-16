@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AttestaFlow — Nouvelle demande</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--s:#4a7c59;--sl:#e8f0eb;--sd:#2d4f38;--ink:#0f0f0f;--off:#f7f6f3;--white:#ffffff;--border:#e0e0d8;--muted:#888880;}
+    html,body{width:100%;min-height:100vh;font-family:'Inter',sans-serif;background:var(--off);color:var(--ink);}
+    .sidebar{position:fixed;top:0;left:0;height:100vh;width:248px;background:var(--ink);border-right:1px solid #1e1e1e;display:flex;flex-direction:column;z-index:100;}
+    .sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--s);}
+    .brand{padding:26px 20px 22px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:11px;}
+    .brand-sq{width:36px;height:36px;background:var(--s);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .brand-sq svg{width:17px;height:17px;fill:white;}
+    .brand-name{font-size:16px;font-weight:700;color:white;}
+    .nav{padding:16px 12px;flex:1;overflow-y:auto;}
+    .nav-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.16em;padding:0 8px;margin:18px 0 7px;}
+    .nav-lbl:first-child{margin-top:0;}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;color:rgba(255,255,255,0.45);font-size:13px;font-weight:500;text-decoration:none;margin-bottom:2px;transition:all 0.15s;position:relative;overflow:hidden;}
+    .nav-item::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.04);transform:scaleX(0);transform-origin:left;transition:transform 0.2s;}
+    .nav-item:hover::before{transform:scaleX(1);}
+    .nav-item:hover{color:rgba(255,255,255,0.85);}
+    .nav-item.active{background:rgba(74,124,89,0.18);color:white;border:1px solid rgba(74,124,89,0.25);}
+    .nav-item.active::after{content:'';position:absolute;left:0;top:22%;bottom:22%;width:2.5px;background:var(--s);border-radius:0 2px 2px 0;}
+    .nav-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;}
+    .nav-badge{margin-left:auto;background:var(--s);color:white;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;}
+    .nav-badge.red{background:#ef4444;}
+    .sidebar-foot{padding:12px;border-top:1px solid #1e1e1e;}
+    .user-card{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);}
+    .avatar{width:34px;height:34px;border-radius:50%;background:var(--s);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+    .uname{font-size:13px;font-weight:600;color:white;}
+    .urole{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:2px;text-transform:uppercase;}
+    .urole.agent{background:rgba(255,182,39,0.15);color:#e5a800;border:1px solid rgba(255,182,39,0.2);}
+    .urole.admin{background:rgba(74,124,89,0.2);color:var(--s);border:1px solid rgba(74,124,89,0.3);}
+    .urole.beneficiaire{background:rgba(74,124,89,0.12);color:var(--s);border:1px solid rgba(74,124,89,0.2);}
+    .main{margin-left:248px;padding:36px 40px;min-height:100vh;}
+    .bc{font-size:11px;color:var(--muted);margin-bottom:10px;}
+    .bc a{color:var(--muted);text-decoration:none;} .bc a:hover{color:var(--s);}
+    .page-h{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-0.7px;}
+    .page-s{font-size:13px;color:var(--muted);margin-top:5px;margin-bottom:28px;}
+    .success-box{background:var(--sl);border:1.5px solid #b8d4c0;border-radius:10px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:flex-start;gap:11px;}
+    .success-box svg{width:16px;height:16px;stroke:var(--s);fill:none;flex-shrink:0;margin-top:2px;}
+    .success-box strong{display:block;color:var(--sd);font-size:14px;margin-bottom:3px;}
+    .success-box p{font-size:13px;color:var(--s);}
+    .success-box a{color:var(--sd);font-weight:700;}
+    .prefill-info{background:#f0fdf4;border:1px solid #b8d4c0;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:12px;color:var(--sd);display:flex;align-items:center;gap:8px;}
+    .prefill-info svg{width:14px;height:14px;stroke:var(--s);fill:none;flex-shrink:0;}
+    .form-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:32px;max-width:740px;}
+    .sec-title{font-size:10px;font-weight:700;color:var(--s);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:16px;margin-top:26px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+    .sec-title:first-child{margin-top:0;}
+    .sec-title::before{content:'';width:3px;height:12px;background:var(--s);border-radius:2px;flex-shrink:0;}
+    .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+    .fg{display:flex;flex-direction:column;gap:7px;}
+    .fg.full{grid-column:1/-1;}
+    .field-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;transition:color 0.2s;}
+    .fg.focused .field-lbl{color:var(--s);}
+    .fwrap{position:relative;}
+    .fwrap .f-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:#ccc;fill:none;stroke-width:2;pointer-events:none;transition:stroke 0.2s;}
+    .fg.focused .fwrap .f-icon{stroke:var(--s);}
+    .finput{width:100%;background:var(--off);border:1.5px solid var(--border);border-radius:8px;padding:12px 12px 12px 38px;font-size:13px;font-family:'Inter',sans-serif;color:var(--ink);outline:none;transition:all 0.2s;-webkit-appearance:none;}
+    .finput::placeholder{color:#ccc;}
+    .finput:focus{border-color:var(--s);background:var(--sl);box-shadow:0 0 0 3px rgba(74,124,89,0.1);}
+    select.finput option{background:white;color:var(--ink);}
+    .progress-bar{display:flex;align-items:center;gap:0;margin-bottom:28px;}
+    .prog-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
+    .prog-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;right:-50%;height:2px;background:var(--border);z-index:0;transition:background 0.3s;}
+    .prog-step.done:not(:last-child)::after{background:var(--s);}
+    .prog-dot{width:28px;height:28px;border-radius:50%;background:var(--off);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);position:relative;z-index:1;transition:all 0.3s;}
+    .prog-step.active .prog-dot{background:var(--s);border-color:var(--s);color:white;box-shadow:0 0 0 4px rgba(74,124,89,0.15);}
+    .prog-step.done .prog-dot{background:var(--s);border-color:var(--s);color:white;}
+    .prog-lbl{font-size:9px;font-weight:600;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:0.08em;}
+    .prog-step.active .prog-lbl,.prog-step.done .prog-lbl{color:var(--s);}
+    .form-section{display:none;}
+    .form-section.active{display:block;}
+    .form-nav{display:flex;gap:10px;margin-top:24px;}
+    .btn-prev{flex:1;background:var(--off);border:1.5px solid var(--border);border-radius:8px;padding:13px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+    .btn-prev:hover{border-color:var(--ink);color:var(--ink);}
+    .btn-next{flex:2;background:var(--ink);border:none;border-radius:8px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;position:relative;overflow:hidden;transition:all 0.2s;}
+    .btn-next::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .btn-next:hover::after{transform:scaleX(1);}
+    .btn-next span{position:relative;z-index:1;}
+    .btn-submit-final{width:100%;background:var(--ink);border:none;border-radius:8px;padding:14px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;margin-top:22px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-submit-final::after{content:'';position:absolute;inset:0;background:var(--s);transform:scaleX(0);transform-origin:left;transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:0;}
+    .btn-submit-final:hover::after{transform:scaleX(1);}
+    .btn-submit-final span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .delai-info{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-top:16px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;}
+    .delai-info svg{width:14px;height:14px;stroke:var(--muted);fill:none;flex-shrink:0;}
+    .step-error{display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 14px;margin-top:14px;font-size:13px;color:#dc2626;font-weight:500;align-items:center;gap:8px;}
+    .step-error.show{display:flex;}
+    .step-error svg{flex-shrink:0;}
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="brand"><div class="brand-sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:2"/></svg></div><div class="brand-name">AttestaFlow</div></div>
+  <div class="nav">
+    <div class="nav-lbl">Menu</div>
+    <a href="/dashboard/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+    {% if role == 'beneficiaire' %}
+      <a href="/demande/" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Nouvelle demande</a>
+      <a href="/liste/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Mes demandes<span class="nav-badge">{{ demandes_count }}</span></a>
+      <a href="/mes-attestations/" class="nav-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Mes attestations</a>
+      <a href="/verifier-page/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Vérifier attestation</a>
+      <a href="/aide/" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Aide</a>
+    {% endif %}
+    <div class="nav-lbl">Compte</div>
+    <a href="/profil/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mon profil</a>
+    <a href="/logout/" class="nav-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Déconnexion</a>
+  </div>
+  <div class="sidebar-foot"><div class="user-card"><div class="avatar">{{ user.username|first|upper }}</div><div><div class="uname">{{ user.username }}</div><span class="urole {{ role }}">{{ role }}</span></div></div></div>
+</div>
+
+<div class="main">
+  <div class="bc"><a href="/dashboard/">Dashboard</a> › Nouvelle demande</div>
+  <div class="page-h">Nouvelle demande</div>
+  <div class="page-s">Remplissez toutes les informations en 3 étapes</div>
+
+  {% if success %}
+  <div class="success-box">
+    <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    <div><strong>Demande soumise avec succès !</strong><p>En cours de traitement. <a href="/liste/">Voir mes demandes →</a></p></div>
+  </div>
+  {% endif %}
+
+  {% if derniere_demande %}
+  <div class="prefill-info">
+    <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Les champs ont été pré-remplis avec vos informations précédentes. Vous pouvez les modifier si nécessaire.
+  </div>
+  {% endif %}
+
+  <div class="form-card">
+    <div class="progress-bar">
+      <div class="prog-step active" id="ps1"><div class="prog-dot">1</div><div class="prog-lbl">Document</div></div>
+      <div class="prog-step" id="ps2"><div class="prog-dot">2</div><div class="prog-lbl">Personnel</div></div>
+      <div class="prog-step" id="ps3"><div class="prog-dot">3</div><div class="prog-lbl">Académique</div></div>
+    </div>
+
+    <form method="POST" id="mainForm">
+      {% csrf_token %}
+
+      <!-- ÉTAPE 1 -->
+      <div class="form-section active" id="step1">
+        <div class="sec-title">Type de document</div>
+        <div class="fg full">
+          <label class="field-lbl">Type d'attestation</label>
+          <div class="fwrap">
+            <svg class="f-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <select class="finput" name="type_document">
+  <option value="Attestation de scolarité">📄 Attestation de scolarité — Prouve votre inscription active à l'EMSI</option>
+  <option value="Attestation de réussite">🏆 Attestation de réussite — Prouve la validation de votre année/diplôme</option>
+  <option value="Attestation d'inscription">📋 Attestation d'inscription — Confirme votre inscription administrative</option>
+</select>
+          </div>
+        </div>
+        <div class="delai-info">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Votre demande sera traitée dans 24h à 48h ouvrables.
+        </div>
+        <div class="form-nav">
+          <button type="button" class="btn-next" onclick="goStep(2)"><span>Suivant →</span></button>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 2 -->
+      <div class="form-section" id="step2">
+        <div class="sec-title">Informations personnelles</div>
+        <div class="fgrid">
+          <div class="fg full">
+            <label class="field-lbl">Nom complet</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input class="finput" type="text" name="nom_complet"
+                value="{{ utilisateur.nom|default:'' }}"
+                placeholder="Ex: AHMICH Houssam">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="field-lbl">CIN</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <input class="finput" type="text" name="cin"
+                value="{{ derniere_demande.cin|default:'' }}"
+                placeholder="Ex: AB123456">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="field-lbl">Date de naissance</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <input class="finput" type="date" name="date_naissance"
+                value="{{ derniere_demande.date_naissance|default:'' }}">
+            </div>
+          </div>
+          <div class="fg full">
+            <label class="field-lbl">Lieu de naissance</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input class="finput" type="text" name="lieu_naissance"
+                value="{{ derniere_demande.lieu_naissance|default:'' }}"
+                placeholder="Ex: Rabat">
+            </div>
+          </div>
+        </div>
+        <div class="step-error" id="err2">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Veuillez remplir tous les champs avant de continuer
+        </div>
+        <div class="form-nav">
+          <button type="button" class="btn-prev" onclick="goStep(1)">← Précédent</button>
+          <button type="button" class="btn-next" onclick="goStep(3)"><span>Suivant →</span></button>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 3 -->
+      <div class="form-section" id="step3">
+        <div class="sec-title">Informations académiques</div>
+        <div class="fgrid">
+          <div class="fg">
+            <label class="field-lbl">Matricule</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <input class="finput" type="text" name="matricule"
+                value="{{ derniere_demande.matricule|default:'' }}"
+                placeholder="Ex: R-2026-000132">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="field-lbl">Année universitaire</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <input class="finput" type="text" name="annee_universitaire"
+                value="{{ derniere_demande.annee_universitaire|default:'2025-2026' }}"
+                placeholder="Ex: 2025-2026">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="field-lbl">Filière</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>
+              <input class="finput" type="text" name="filiere"
+                value="{{ derniere_demande.filiere|default:'' }}"
+                placeholder="Ex: Ingénierie Informatique">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="field-lbl">Niveau</label>
+            <div class="fwrap">
+              <svg class="f-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <select class="finput" name="niveau">
+                {% with niv=derniere_demande.niveau|default:"1ère année" %}
+                <option {% if niv == "1ère année" %}selected{% endif %}>1ère année</option>
+                <option {% if niv == "2ème année" %}selected{% endif %}>2ème année</option>
+                <option {% if niv == "3ème année" %}selected{% endif %}>3ème année</option>
+                <option {% if niv == "4ème année" %}selected{% endif %}>4ème année</option>
+                <option {% if niv == "5ème année" %}selected{% endif %}>5ème année</option>
+                <option {% if niv == "Master 1" %}selected{% endif %}>Master 1</option>
+                <option {% if niv == "Master 2" %}selected{% endif %}>Master 2</option>
+                <option {% if niv == "Doctorat" %}selected{% endif %}>Doctorat</option>
+                {% endwith %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="step-error" id="err3">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Veuillez remplir tous les champs avant de continuer
+        </div>
+        <div class="form-nav">
+          <button type="button" class="btn-prev" onclick="goStep(2)">← Précédent</button>
+        </div>
+        <button type="submit" class="btn-submit-final">
+          <span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Soumettre la demande
+          </span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.fg').forEach(f => {
+  const inp = f.querySelector('input,select');
+  if (!inp) return;
+  inp.addEventListener('focus', () => f.classList.add('focused'));
+  inp.addEventListener('blur',  () => f.classList.remove('focused'));
+});
+
+function val(name) {
+  return (document.querySelector('[name="' + name + '"]') || {value:''}).value.trim();
+}
+
+let currentStep = 1;
+function goStep(n) {
+  // Validation étape 2 → 3
+  if (currentStep === 2 && n === 3) {
+    const err = document.getElementById('err2');
+    if (!val('nom_complet') || !val('cin') || !val('date_naissance') || !val('lieu_naissance')) {
+      err.classList.add('show');
+      return;
+    }
+    err.classList.remove('show');
+  }
+
+  const cur = document.getElementById('step' + currentStep);
+  cur.style.opacity = '0';
+  cur.style.transform = n > currentStep ? 'translateX(-20px)' : 'translateX(20px)';
+  cur.style.transition = 'all 0.25s';
+  setTimeout(() => {
+    cur.classList.remove('active');
+    cur.style.cssText = '';
+    currentStep = n;
+    const next = document.getElementById('step' + n);
+    next.style.opacity = '0';
+    next.style.transform = 'translateX(20px)';
+    next.classList.add('active');
+    setTimeout(() => {
+      next.style.cssText = 'transition:all 0.3s;opacity:1;transform:translateX(0)';
+    }, 10);
+    [1,2,3].forEach(i => {
+      const ps = document.getElementById('ps' + i);
+      ps.classList.remove('active','done');
+      if (i < n) ps.classList.add('done');
+      if (i === n) ps.classList.add('active');
+      const dot = document.querySelector('#ps' + i + ' .prog-dot');
+      dot.innerHTML = i < n ? '✓' : i;
+    });
+  }, 250);
+}
+
+document.getElementById('mainForm').addEventListener('submit', function(e) {
+  const err = document.getElementById('err3');
+  if (!val('matricule') || !val('filiere') || !val('annee_universitaire')) {
+    e.preventDefault();
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  document.querySelectorAll('.form-section input, .form-section select').forEach(inp => {
+    inp.removeAttribute('required');
+    inp.disabled = false;
+  });
+});
+</script>
+</body>
+</html>
