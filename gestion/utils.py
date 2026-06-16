@@ -4,7 +4,7 @@ from django.conf import settings
 
 
 def generer_qr_code(numero_attestation, base_url=None):
-    NGROK_URL = "https://bluff-riverbank-suffix.ngrok-free.dev"
+    NGROK_URL = "https://Houssams.pythonanywhere.com"
 
     if base_url and "127.0.0.1" not in base_url and "localhost" not in base_url:
         url_verification = f"{base_url}/verifier/{numero_attestation}/?ngrok-skip-browser-warning=true"
