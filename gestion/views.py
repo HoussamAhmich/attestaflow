@@ -599,19 +599,29 @@ def generer_pdf_scolarite(request, demande, attestation):
     from datetime import date
     from django.conf import settings
 
-    nom        = demande.utilisateur.nom
-    cin        = demande.cin or "—"
     try:
-        from datetime import datetime
-        dn = datetime.strptime(demande.date_naissance, '%Y-%m-%d')
-        date_naiss = dn.strftime('%d/%m/%Y')
-    except:
-        date_naiss = demande.date_naissance or "—"
-    lieu_naiss = demande.lieu_naissance or "—"
-    filiere    = demande.filiere or "—"
-    niveau     = demande.niveau or "—"
-    annee      = demande.annee_universitaire or "—"
-    matricule  = demande.matricule or "—"
+        etudiant    = EtudiantDB.objects.get(matricule=demande.matricule)
+        nom         = f"{etudiant.prenom} {etudiant.nom}"
+        cin         = etudiant.cin or "—"
+        date_naiss  = etudiant.date_naissance or "—"
+        lieu_naiss  = etudiant.lieu_naissance or "—"
+        filiere     = etudiant.filiere or "—"
+        niveau      = etudiant.niveau or "—"
+        annee       = etudiant.annee_universitaire or "—"
+        matricule   = etudiant.matricule
+        annee_debut = etudiant.annee_debut or "—"
+        annee_fin   = etudiant.annee_fin or "—"
+        nationalite = etudiant.nationalite or "Marocaine"
+    except EtudiantDB.DoesNotExist:
+        nom         = demande.utilisateur.nom
+        cin         = demande.cin or "—"
+        date_naiss  = demande.date_naissance or "—"
+        lieu_naiss  = demande.lieu_naissance or "—"
+        filiere     = demande.filiere or "—"
+        niveau      = demande.niveau or "—"
+        annee       = demande.annee_universitaire or "—"
+        matricule   = demande.matricule or "—"
+        annee_debut = annee_fin = nationalite = "—"
     date_str   = attestation.date_emission.strftime('%d/%m/%Y') if attestation.date_emission else date.today().strftime('%d/%m/%Y')
     logo_path  = os.path.join(settings.BASE_DIR, 'gestion', 'static', 'images', 'emsi_logo.png')
 
@@ -667,19 +677,29 @@ def generer_pdf_reussite(request, demande, attestation):
     from datetime import date
     from django.conf import settings
 
-    nom        = demande.utilisateur.nom
-    cin        = demande.cin or "—"
     try:
-        from datetime import datetime
-        dn = datetime.strptime(demande.date_naissance, '%Y-%m-%d')
-        date_naiss = dn.strftime('%d/%m/%Y')
-    except:
-        date_naiss = demande.date_naissance or "—"
-    lieu_naiss = demande.lieu_naissance or "—"
-    filiere    = demande.filiere or "—"
-    niveau     = demande.niveau or "—"
-    annee      = demande.annee_universitaire or "—"
-    matricule  = demande.matricule or "—"
+        etudiant    = EtudiantDB.objects.get(matricule=demande.matricule)
+        nom         = f"{etudiant.prenom} {etudiant.nom}"
+        cin         = etudiant.cin or "—"
+        date_naiss  = etudiant.date_naissance or "—"
+        lieu_naiss  = etudiant.lieu_naissance or "—"
+        filiere     = etudiant.filiere or "—"
+        niveau      = etudiant.niveau or "—"
+        annee       = etudiant.annee_universitaire or "—"
+        matricule   = etudiant.matricule
+        annee_debut = etudiant.annee_debut or "—"
+        annee_fin   = etudiant.annee_fin or "—"
+        nationalite = etudiant.nationalite or "Marocaine"
+    except EtudiantDB.DoesNotExist:
+        nom         = demande.utilisateur.nom
+        cin         = demande.cin or "—"
+        date_naiss  = demande.date_naissance or "—"
+        lieu_naiss  = demande.lieu_naissance or "—"
+        filiere     = demande.filiere or "—"
+        niveau      = demande.niveau or "—"
+        annee       = demande.annee_universitaire or "—"
+        matricule   = demande.matricule or "—"
+        annee_debut = annee_fin = nationalite = "—"
     date_str   = attestation.date_emission.strftime('%d/%m/%Y') if attestation.date_emission else date.today().strftime('%d/%m/%Y')
     logo_path  = os.path.join(settings.BASE_DIR, 'gestion', 'static', 'images', 'emsi_logo.png')
 
@@ -799,19 +819,29 @@ def generer_pdf_inscription(request, demande, attestation):
     from datetime import date
     from django.conf import settings
 
-    nom        = demande.utilisateur.nom
-    cin        = demande.cin or "—"
     try:
-        from datetime import datetime
-        dn = datetime.strptime(demande.date_naissance, '%Y-%m-%d')
-        date_naiss = dn.strftime('%d/%m/%Y')
-    except:
-        date_naiss = demande.date_naissance or "—"
-    lieu_naiss = demande.lieu_naissance or "—"
-    filiere    = demande.filiere or "—"
-    niveau     = demande.niveau or "—"
-    annee      = demande.annee_universitaire or "—"
-    matricule  = demande.matricule or "—"
+        etudiant    = EtudiantDB.objects.get(matricule=demande.matricule)
+        nom         = f"{etudiant.prenom} {etudiant.nom}"
+        cin         = etudiant.cin or "—"
+        date_naiss  = etudiant.date_naissance or "—"
+        lieu_naiss  = etudiant.lieu_naissance or "—"
+        filiere     = etudiant.filiere or "—"
+        niveau      = etudiant.niveau or "—"
+        annee       = etudiant.annee_universitaire or "—"
+        matricule   = etudiant.matricule
+        annee_debut = etudiant.annee_debut or "—"
+        annee_fin   = etudiant.annee_fin or "—"
+        nationalite = etudiant.nationalite or "Marocaine"
+    except EtudiantDB.DoesNotExist:
+        nom         = demande.utilisateur.nom
+        cin         = demande.cin or "—"
+        date_naiss  = demande.date_naissance or "—"
+        lieu_naiss  = demande.lieu_naissance or "—"
+        filiere     = demande.filiere or "—"
+        niveau      = demande.niveau or "—"
+        annee       = demande.annee_universitaire or "—"
+        matricule   = demande.matricule or "—"
+        annee_debut = annee_fin = nationalite = "—"
     date_str   = attestation.date_emission.strftime('%d/%m/%Y') if attestation.date_emission else date.today().strftime('%d/%m/%Y')
     logo_path  = os.path.join(settings.BASE_DIR, 'gestion', 'static', 'images', 'emsi_logo.png')
 
@@ -958,6 +988,93 @@ def generer_pdf_inscription(request, demande, attestation):
 
 
 # ══════════════════════════════════════════════
+# 4️⃣ ATTESTATION DE DIPLÔME
+# ══════════════════════════════════════════════
+def generer_pdf_diplome(request, demande, attestation):
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib import colors
+    from reportlab.pdfgen import canvas
+    import io, os
+    from datetime import date
+    from django.conf import settings
+
+    try:
+        etudiant    = EtudiantDB.objects.get(matricule=demande.matricule)
+        nom         = f"{etudiant.prenom} {etudiant.nom}"
+        cin         = etudiant.cin or "—"
+        date_naiss  = etudiant.date_naissance or "—"
+        lieu_naiss  = etudiant.lieu_naissance or "—"
+        filiere     = etudiant.filiere or "—"
+        niveau      = etudiant.niveau or "—"
+        annee       = etudiant.annee_universitaire or "—"
+        matricule   = etudiant.matricule
+        annee_debut = etudiant.annee_debut or "—"
+        annee_fin   = etudiant.annee_fin or "—"
+        nationalite = etudiant.nationalite or "Marocaine"
+    except EtudiantDB.DoesNotExist:
+        nom         = demande.utilisateur.nom
+        cin         = demande.cin or "—"
+        date_naiss  = demande.date_naissance or "—"
+        lieu_naiss  = demande.lieu_naissance or "—"
+        filiere     = demande.filiere or "—"
+        niveau      = demande.niveau or "—"
+        annee       = demande.annee_universitaire or "—"
+        matricule   = demande.matricule or "—"
+        annee_debut = annee_fin = nationalite = "—"
+    date_str  = attestation.date_emission.strftime('%d/%m/%Y') if attestation.date_emission else date.today().strftime('%d/%m/%Y')
+    logo_path = os.path.join(settings.BASE_DIR, 'gestion', 'static', 'images', 'emsi_logo.png')
+
+    buffer = io.BytesIO()
+    W, H = A4
+    c = canvas.Canvas(buffer, pagesize=A4)
+
+    _draw_header(c, W, H, logo_path, date_str)
+    _draw_title_banner(c, W, H, "Attestation de Diplôme", "Année Universitaire " + annee)
+
+    y = H - 200
+    c.setFont("Helvetica", 10.5)
+    c.setFillColor(colors.HexColor('#333333'))
+    c.drawString(32, y,      "Le Directeur Pédagogique de l'École Marocaine des Sciences de l'Ingénieur")
+    c.drawString(32, y - 15, "(EMSI) — Rabat,")
+
+    y -= 36
+    c.setFont("Helvetica-Oblique", 10)
+    c.drawString(32, y, "Vu le procès-verbal de délibération des résultats,")
+
+    y -= 26
+    c.setFont("Helvetica", 10.5)
+    c.setFillColor(colors.HexColor('#333333'))
+    c.drawString(32, y, "Atteste que le nommé(e) :")
+
+    y -= 20
+    c.setFont("Helvetica-Bold", 13)
+    c.setFillColor(colors.HexColor('#0f0f0f'))
+    c.drawString(48, y, nom.upper())
+
+    y -= 20
+    c.setFont("Helvetica", 10.5)
+    c.setFillColor(colors.HexColor('#333333'))
+    c.drawString(32, y,      f"né(e) le {date_naiss} à {lieu_naiss}, de nationalité {nationalite},")
+    c.drawString(32, y - 16, f"inscrit(e) sous le numéro matricule {matricule}")
+    c.drawString(32, y - 32, f"dans la Spécialité {filiere} de cette École,")
+    c.drawString(32, y - 48, f"a satisfait aux exigences du programme d'études de la {niveau}")
+    c.drawString(32, y - 64, f"de {annee_debut} à {annee_fin}.")
+
+    y -= 88
+    c.drawString(32, y,      "En foi de quoi, la présente attestation de diplôme lui est délivrée pour")
+    c.drawString(32, y - 16, "qu'il/elle en jouisse avec les droits et prérogatives qui y sont attachés.")
+
+    _draw_signature_zone(c, W, y - 50)
+    _draw_footer_qr(c, W, attestation, date_str)
+
+    c.save()
+    buffer.seek(0)
+    response = HttpResponse(buffer.read(), content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="diplome_{nom}.pdf"'
+    return response
+
+
+# ══════════════════════════════════════════════
 # ROUTEUR PRINCIPAL
 # ══════════════════════════════════════════════
 def generer_attestation_pdf(request, demande_id):
@@ -969,10 +1086,12 @@ def generer_attestation_pdf(request, demande_id):
     type_doc = demande.type_document
     if type_doc == "Attestation de scolarité":
         return generer_pdf_scolarite(request, demande, attestation)
-    elif type_doc == "Attestation de réussite":
-        return generer_pdf_reussite(request, demande, attestation)
     elif type_doc == "Attestation d'inscription":
         return generer_pdf_inscription(request, demande, attestation)
+    elif type_doc == "Attestation de réussite":
+        return generer_pdf_reussite(request, demande, attestation)
+    elif type_doc == "Attestation de diplôme":
+        return generer_pdf_diplome(request, demande, attestation)
     else:
         return generer_pdf_scolarite(request, demande, attestation)
 
