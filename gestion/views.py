@@ -207,27 +207,6 @@ def accepter_demande(request, id):
         return HttpResponse("Erreur")
 
 
-# ❌ REFUSER
-def refuser_demande(request, id):
-    if not request.user.is_authenticated:
-        return redirect('/login/')
-    try:
-        u = Utilisateur.objects.get(user=request.user)
-        if u.role not in ['agent', 'admin']:
-            return render(request, '403.html', status=403)
-    except:
-        return redirect('/login/')
-    try:
-        d = Demande.objects.get(id=id)
-        motif = request.POST.get('motif', '').strip()
-        d.statut = "refusée"
-        d.motif_refus = motif if motif else "Aucun motif spécifié"
-        d.save()
-        journaliser(u, 'rejet', f"Demande #{id} de {d.utilisateur.nom} rejetée")
-        return redirect('/liste/')
-    except:
-        return HttpResponse("Erreur")
-
 
 # 🆕 REGISTER
 def register(request):

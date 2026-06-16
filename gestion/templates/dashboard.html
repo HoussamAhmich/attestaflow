@@ -52,11 +52,11 @@
     .stat:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:var(--s);}
     .stat::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%;transition:width 0.2s;}
     .stat:hover::after{width:6px;}
-    .sc::after{background:#06b6d4;} .sw::after{background:#e0a800;} .sg::after{background:var(--s);} .sr::after{background:#ef4444;}
+    .sc::after{background:#06b6d4;} .sw::after{background:#e0a800;} .sg::after{background:var(--s);}
     .stat-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;transition:transform 0.2s;}
     .stat:hover .stat-ico{transform:scale(1.1) rotate(-5deg);}
     .stat-ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;}
-    .ic{background:#e0f7fa;color:#0891b2;} .iw{background:#fff8e6;color:#e0a800;} .ig{background:var(--sl);color:var(--s);} .ir{background:#fef2f2;color:#ef4444;}
+    .ic{background:#e0f7fa;color:#0891b2;} .iw{background:#fff8e6;color:#e0a800;} .ig{background:var(--sl);color:var(--s);}
     .stat-val{font-size:34px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-1.5px;}
     .stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;font-weight:500;}
     .stat-tag{font-size:11px;margin-top:8px;font-weight:600;}
@@ -82,7 +82,6 @@
     .bdot{width:5px;height:5px;border-radius:50%;}
     .b-p{background:#fff8e6;color:#92690a;border:1px solid #f5d98a;} .b-p .bdot{background:#e0a800;}
     .b-a{background:var(--sl);color:var(--sd);border:1px solid #b8d4c0;} .b-a .bdot{background:var(--s);}
-    .b-r{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;} .b-r .bdot{background:#ef4444;}
     .rcol{display:flex;flex-direction:column;gap:14px;}
     .qa-btn{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:9px;background:var(--off);border:1px solid var(--border);color:var(--ink);font-size:13px;font-weight:500;text-decoration:none;transition:all 0.2s;margin-bottom:7px;position:relative;overflow:hidden;}
     .qa-btn:last-child{margin-bottom:0;}
@@ -163,7 +162,6 @@
     <div class="stat sc" data-target="{{ total_demandes }}"><div class="stat-ico ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="stat-val counting">0</div><div class="stat-lbl">Total demandes</div></div>
     <div class="stat sw" data-target="{{ en_attente }}"><div class="stat-ico iw"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-val counting">0</div><div class="stat-lbl">En attente</div><div class="stat-tag twarn">● En traitement</div></div>
     <div class="stat sg" data-target="{{ approuvees }}"><div class="stat-ico ig"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="stat-val counting">0</div><div class="stat-lbl">Approuvées</div><div class="stat-tag tup">● Validées</div></div>
-    <div class="stat sr" data-target="{{ refusees }}"><div class="stat-ico ir"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="stat-val counting">0</div><div class="stat-lbl">Refusées</div></div>
   </div>
 
   <div class="content-grid">
@@ -173,7 +171,7 @@
         {% for d in demandes_recentes %}<tr>
           <td><div class="doc-row"><div class="doc-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="doc-name">{{ d.type_document }}</span></div></td>
           <td style="color:var(--muted)">{{ d.date_soumission|date:"d M Y" }}</td>
-          <td>{% if d.statut == 'en attente' %}<span class="badge b-p"><span class="bdot"></span>En attente</span>{% elif d.statut == 'acceptée' %}<span class="badge b-a"><span class="bdot"></span>Acceptée</span>{% elif d.statut == 'refusée' %}<span class="badge b-r"><span class="bdot"></span>Refusée</span>{% endif %}</td>
+          <td>{% if d.statut == 'en attente' %}<span class="badge b-p"><span class="bdot"></span>En attente</span>{% elif d.statut == 'acceptée' %}<span class="badge b-a"><span class="bdot"></span>Acceptée</span>{% endif %}</td>
         </tr>{% empty %}<tr><td colspan="3" style="text-align:center;padding:36px;color:var(--muted)">Aucune demande</td></tr>{% endfor %}
       </tbody></table>
     </div>

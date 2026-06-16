@@ -62,7 +62,6 @@
     .f-all{border-color:var(--s);background:var(--sl);color:var(--sd);}
     .f-p{border-color:#f5d98a;background:#fff8e6;color:#92690a;}
     .f-a{border-color:#b8d4c0;background:var(--sl);color:var(--sd);}
-    .f-r{border-color:#fecaca;background:#fef2f2;color:#b91c1c;}
     .f-ann{border-color:#fdd8b0;background:#fff3e8;color:#9a4a00;}
     .srch-info{font-size:12px;color:var(--muted);margin-bottom:12px;}
     .srch-info span{background:var(--sl);border:1px solid #b8d4c0;padding:2px 8px;border-radius:5px;color:var(--sd);font-weight:600;}
@@ -92,16 +91,12 @@
     .btn-acc{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;background:var(--sl);color:var(--sd);border:1px solid #b8d4c0;font-size:11px;font-weight:600;text-decoration:none;transition:all 0.15s;font-family:'Inter',sans-serif;cursor:pointer;}
     .btn-acc:hover{background:#c8dfd0;transform:translateY(-1px);}
     .btn-acc svg{width:11px;height:11px;stroke:currentColor;fill:none;}
-    .btn-ref{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;font-size:11px;font-weight:600;border:none;transition:all 0.15s;font-family:'Inter',sans-serif;cursor:pointer;}
-    .btn-ref:hover{background:#fee2e2;transform:translateY(-1px);}
-    .btn-ref svg{width:11px;height:11px;stroke:currentColor;fill:none;}
     .btn-pdf{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;background:var(--ink);color:white;border:1px solid var(--ink);font-size:11px;font-weight:600;text-decoration:none;transition:all 0.15s;font-family:'Inter',sans-serif;}
     .btn-pdf:hover{background:var(--s);border-color:var(--s);transform:translateY(-1px);}
     .btn-pdf svg{width:11px;height:11px;stroke:currentColor;fill:none;}
     .btn-ann{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:6px;background:#fff3e8;color:#9a4a00;border:1px solid #fdd8b0;font-size:11px;font-weight:600;transition:all 0.15s;font-family:'Inter',sans-serif;cursor:pointer;}
     .btn-ann:hover{background:#ffe8d0;transform:translateY(-1px);}
     .btn-ann svg{width:11px;height:11px;stroke:currentColor;fill:none;}
-    .motif-box{font-size:11px;color:#b91c1c;margin-top:4px;background:#fef2f2;border:1px solid #fecaca;border-radius:5px;padding:3px 8px;max-width:200px;}
     .empty-state{padding:60px 22px;text-align:center;}
     .empty-ico{width:52px;height:52px;border-radius:12px;background:var(--sl);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
     .empty-ico svg{width:22px;height:22px;stroke:var(--s);fill:none;}
@@ -122,8 +117,6 @@
     .modal-cancel:hover{border-color:var(--ink);color:var(--ink);}
     .modal-confirm-ann{flex:1;padding:10px;border:none;border-radius:8px;background:#9a4a00;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:white;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;}
     .modal-confirm-ann:hover{background:#7a3a00;}
-    .modal-confirm-ref{flex:1;padding:10px;border:none;border-radius:8px;background:#b91c1c;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:white;cursor:pointer;}
-    .modal-confirm-ref:hover{background:#991b1b;}
       .hamburger{display:none;position:fixed;top:14px;left:14px;z-index:200;background:#0f0f0f;border:none;border-radius:8px;width:40px;height:40px;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;padding:0;}
     .hamburger span{display:block;width:18px;height:2px;background:white;border-radius:2px;transition:all 0.3s;}
     .sidebar-close{display:none;position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.08);border:none;border-radius:6px;width:32px;height:32px;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px;line-height:1;}
@@ -191,25 +184,6 @@
   </div>
 </div>
 
-<!-- Modal Refus avec motif -->
-<div class="modal-bg" id="refModal">
-  <div class="modal">
-    <div class="modal-ico" style="background:#fef2f2;">
-      <svg viewBox="0 0 24 24" stroke-width="2" style="stroke:#b91c1c;fill:none;width:20px;height:20px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </div>
-    <h3>Refuser la demande</h3>
-    <p>Entrez un motif de refus. L'étudiant pourra le consulter dans ses demandes.</p>
-    <form id="refForm" method="POST">
-      {% csrf_token %}
-      <textarea name="motif" id="motifInput" class="modal-textarea" placeholder="Ex: Informations incomplètes, CIN incorrect, Matricule invalide..."></textarea>
-      <div class="modal-btns">
-        <button type="button" class="modal-cancel" onclick="document.getElementById('refModal').classList.remove('show')">Annuler</button>
-        <button type="submit" class="modal-confirm-ref">✗ Confirmer le refus</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <div class="main">
   <div class="ph-row">
     <div>
@@ -238,7 +212,6 @@
     <a href="/liste/{% if recherche %}?q={{ recherche }}{% endif %}" class="ftag {% if not statut_actif %}f-all{% endif %}">Toutes</a>
     <a href="/liste/?statut=en+attente{% if recherche %}&q={{ recherche }}{% endif %}" class="ftag {% if statut_actif == 'en attente' %}f-p{% endif %}">⏳ En attente</a>
     <a href="/liste/?statut=accept%C3%A9e{% if recherche %}&q={{ recherche }}{% endif %}" class="ftag {% if statut_actif == 'acceptée' %}f-a{% endif %}">✅ Acceptées</a>
-    <a href="/liste/?statut=refus%C3%A9e{% if recherche %}&q={{ recherche }}{% endif %}" class="ftag {% if statut_actif == 'refusée' %}f-r{% endif %}">❌ Refusées</a>
     <a href="/liste/?statut=annulee{% if recherche %}&q={{ recherche }}{% endif %}" class="ftag {% if statut_actif == 'annulee' %}f-ann{% endif %}">🚫 Annulées</a>
   </div>
 
@@ -284,8 +257,6 @@
               {% else %}
                 <span class="badge b-a"><span class="bdot"></span>Acceptée</span>
               {% endif %}
-            {% elif d.statut == 'refusée' %}
-              <span class="badge b-r"><span class="bdot"></span>Refusée</span>
             {% endif %}
           </td>
           <td>
@@ -293,7 +264,6 @@
               {% if role == 'agent' or role == 'admin' %}
                 {% if d.statut == 'en attente' %}
                   <a href="/accepter/{{ d.id }}/" class="btn-acc"><svg viewBox="0 0 24 24" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Accepter</a>
-                  <button class="btn-ref ref-trigger" data-id="{{ d.id }}"><svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Refuser</button>
                 {% else %}
                   <span style="font-size:12px;color:var(--muted)">Traité</span>
                 {% endif %}
@@ -314,14 +284,6 @@
                 <span style="font-size:12px;color:#e0a800;font-weight:600">⏳ En traitement</span>
               {% endif %}
 
-              {% if role == 'beneficiaire' and d.statut == 'refusée' %}
-                <div>
-                  <span style="font-size:12px;color:#b91c1c;font-weight:600">❌ Refusée</span>
-                  {% if d.motif_refus %}
-                  <div class="motif-box">Motif : {{ d.motif_refus }}</div>
-                  {% endif %}
-                </div>
-              {% endif %}
             </div>
           </td>
         </tr>
@@ -353,18 +315,6 @@ document.querySelectorAll('.ann-trigger').forEach(btn => {
 });
 if(modalCancel) modalCancel.addEventListener('click', () => modalBg.classList.remove('show'));
 modalBg.addEventListener('click', e => { if (e.target === modalBg) modalBg.classList.remove('show'); });
-
-// ── Modal Refus
-const refModal = document.getElementById('refModal');
-const refForm  = document.getElementById('refForm');
-document.querySelectorAll('.ref-trigger').forEach(btn => {
-  btn.addEventListener('click', () => {
-    refForm.action = `/refuser/${btn.dataset.id}/`;
-    document.getElementById('motifInput').value = '';
-    refModal.classList.add('show');
-  });
-});
-refModal.addEventListener('click', e => { if (e.target === refModal) refModal.classList.remove('show'); });
 
 // ── Recherche live
 const searchInput = document.getElementById('searchInput');

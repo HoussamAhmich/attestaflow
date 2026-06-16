@@ -58,7 +58,6 @@
     .f-all{border-color:var(--s);background:var(--sl);color:var(--sd);}
     .f-p{border-color:#f5d98a;background:#fff8e6;color:#92690a;}
     .f-a{border-color:#b8d4c0;background:var(--sl);color:var(--sd);}
-    .f-r{border-color:#fecaca;background:#fef2f2;color:var(--red);}
     .card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
     .card-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
     .card-title{font-size:13px;font-weight:700;color:var(--ink);}
@@ -80,12 +79,10 @@
     .bdot{width:5px;height:5px;border-radius:50%;}
     .b-p{background:#fff8e6;color:#92690a;border:1px solid #f5d98a;} .b-p .bdot{background:var(--amber);}
     .b-a{background:var(--sl);color:var(--sd);border:1px solid #b8d4c0;} .b-a .bdot{background:var(--s);}
-    .b-r{background:#fef2f2;color:var(--red);border:1px solid #fecaca;} .b-r .bdot{background:var(--red);}
     .b-ann{background:#fff3e8;color:#9a4a00;border:1px solid #fdd8b0;} .b-ann .bdot{background:#f59332;}
     .actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
     .btn-sm{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;text-decoration:none;}
     .btn-acc{background:var(--sl);color:var(--sd);border:1px solid #b8d4c0;} .btn-acc:hover{background:#c8dfd0;transform:translateY(-1px);}
-    .btn-ref{background:#fef2f2;color:var(--red);border:1px solid #fecaca;} .btn-ref:hover{background:#fee2e2;transform:translateY(-1px);}
     .btn-pdf{background:var(--ink);color:white;} .btn-pdf:hover{background:var(--s);transform:translateY(-1px);}
     .btn-sm svg{width:11px;height:11px;stroke:currentColor;fill:none;}
     .empty-state{padding:60px;text-align:center;}
@@ -222,10 +219,6 @@
       <div class="qs-ico" style="background:var(--sl);color:var(--s)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
       <div><div class="qs-val">{{ approuvees }}</div><div class="qs-lbl">Acceptées</div></div>
     </div>
-    <div class="qs">
-      <div class="qs-ico" style="background:#fef2f2;color:var(--red)"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
-      <div><div class="qs-val">{{ refusees }}</div><div class="qs-lbl">Refusées</div></div>
-    </div>
   </div>
 
   <div class="toolbar">
@@ -237,7 +230,6 @@
       <button class="ftag f-all" data-f="all" onclick="filterD(this)">Toutes</button>
       <button class="ftag" data-f="en attente" onclick="filterD(this)">⏳ En attente</button>
       <button class="ftag" data-f="acceptée" onclick="filterD(this)">✅ Acceptées</button>
-      <button class="ftag" data-f="refusée" onclick="filterD(this)">❌ Refusées</button>
     </div>
   </div>
 
@@ -284,8 +276,6 @@
               {% else %}
                 <span class="badge b-a"><span class="bdot"></span>Acceptée</span>
               {% endif %}
-            {% elif d.statut == 'refusée' %}
-              <span class="badge b-r"><span class="bdot"></span>Refusée</span>
             {% endif %}
           </td>
           <td>
@@ -293,9 +283,6 @@
               {% if d.statut == 'en attente' %}
                 <a href="/accepter/{{ d.id }}/" class="btn-sm btn-acc">
                   <svg viewBox="0 0 24 24" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Accepter
-                </a>
-                <a href="/refuser/{{ d.id }}/" class="btn-sm btn-ref">
-                  <svg viewBox="0 0 24 24" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Refuser
                 </a>
               {% elif d.statut == 'acceptée' %}
                 {% if d.attestation.statut != 'annulee' %}
@@ -329,9 +316,9 @@ document.getElementById('dSearch').addEventListener('input', applyFilter);
 
 function filterD(btn) {
   document.querySelectorAll('.ftag').forEach(b => {
-    b.classList.remove('f-all','f-p','f-a','f-r');
+    b.classList.remove('f-all','f-p','f-a');
   });
-  const map = {'all':'f-all','en attente':'f-p','acceptée':'f-a','refusée':'f-r'};
+  const map = {'all':'f-all','en attente':'f-p','acceptée':'f-a'};
   btn.classList.add(map[btn.dataset.f] || 'f-all');
   activeF = btn.dataset.f;
   applyFilter();

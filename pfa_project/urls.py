@@ -19,7 +19,6 @@ urlpatterns = [
     path('liste/', views.liste_demandes),
     path('journal/', views.journal_actions, name='journal'),
     path('accepter/<int:id>/', views.accepter_demande),
-    path('refuser/<int:id>/', views.refuser_demande),
     path('attestation/<int:demande_id>/pdf/', views.generer_attestation_pdf),
     path('admin-stats/', views.admin_stats),
     path('admin-users/', views.admin_users),
