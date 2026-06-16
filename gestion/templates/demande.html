@@ -89,11 +89,19 @@
     .step-error{display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 14px;margin-top:14px;font-size:13px;color:#dc2626;font-weight:500;align-items:center;gap:8px;}
     .step-error.show{display:flex;}
     .step-error svg{flex-shrink:0;}
-  </style>
+      .hamburger{display:none;position:fixed;top:14px;left:14px;z-index:200;background:#0f0f0f;border:none;border-radius:8px;width:40px;height:40px;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:5px;padding:0;}
+    .hamburger span{display:block;width:18px;height:2px;background:white;border-radius:2px;transition:all 0.3s;}
+    .sidebar-close{display:none;position:absolute;top:14px;right:14px;background:rgba(255,255,255,0.08);border:none;border-radius:6px;width:32px;height:32px;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px;line-height:1;}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:149;}
+    @media(max-width:768px){.hamburger{display:flex;}.sidebar{transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);z-index:150;}.sidebar.open{transform:translateX(0);}.sidebar-close{display:flex;}.overlay.open{display:block;}.main{margin-left:0!important;padding:20px 16px;}}
+</style>
 </head>
 <body>
+<button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
 
 <div class="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="Fermer">✕</button>
   <div class="brand"><div class="brand-sq"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:white;stroke-width:2"/></svg></div><div class="brand-name">AttestaFlow</div></div>
   <div class="nav">
     <div class="nav-lbl">Menu</div>
@@ -346,6 +354,19 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
     inp.disabled = false;
   });
 });
+</script>
+<script>
+(function(){
+  var h=document.getElementById('hamburgerBtn');
+  var s=document.querySelector('.sidebar');
+  var o=document.getElementById('overlay');
+  var c=document.getElementById('sidebarClose');
+  function openNav(){s.classList.add('open');o.classList.add('open');}
+  function closeNav(){s.classList.remove('open');o.classList.remove('open');}
+  h.addEventListener('click',openNav);
+  c.addEventListener('click',closeNav);
+  o.addEventListener('click',closeNav);
+})();
 </script>
 </body>
 </html>
