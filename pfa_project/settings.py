@@ -4,10 +4,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-#61gyrwyx$8+qt8yj+-7w(!o4m-clj^y(tbg74taid!m!pupr&'
 
-DEBUG = False
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.16', '*']
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.16', 'bluff-riverbank-suffix.ngrok-free.dev', '*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -69,11 +65,15 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = '/static/'
+STATIC_ROOT = '/home/Houssams/attestaflow/staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'gestion' / 'static']
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = '/home/Houssams/attestaflow/media'
+
+ALLOWED_HOSTS = ['Houssams.pythonanywhere.com', '127.0.0.1', 'localhost', '*.ngrok-free.app']
+DEBUG = False
 
 SITE_NAME = "DocuFlow"
 
