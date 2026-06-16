@@ -9,6 +9,7 @@ class Utilisateur(models.Model):
     email = models.EmailField()
     mot_de_passe = models.CharField(max_length=255)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='beneficiaire')
+    matricule = models.CharField(max_length=50, blank=True, null=True)
     def __str__(self): return f"{self.nom} ({self.role})"
 
 class Demande(models.Model):

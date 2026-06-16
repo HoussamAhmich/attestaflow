@@ -232,43 +232,56 @@ def refuser_demande(request, id):
 # 🆕 REGISTER
 def register(request):
     if request.method == "POST":
-        username = request.POST.get('username')
-        prenom = request.POST.get('prenom', '')
-        password = request.POST.get('password')
-        password2 = request.POST.get('password2')
-        email = request.POST.get('email')
+        username = request.POST.get('username', '').strip()
+        prenom   = request.POST.get('prenom', '').strip()
+        password = request.POST.get('password', '')
+        password2= request.POST.get('password2', '')
+        email    = request.POST.get('email', '').strip()
+        matricule= request.POST.get('matricule', '').strip()
+
+        def err(msg):
+            return render(request, 'register.html', {
+                'error': msg,
+                'submitted_matricule': matricule,
+            })
+
+        if not matricule:
+            return err("Veuillez entrer votre matricule et cliquer sur Vérifier.")
+
+        try:
+            etudiant = EtudiantDB.objects.get(matricule=matricule)
+        except EtudiantDB.DoesNotExist:
+            return err("Matricule introuvable ❌ — vérifiez votre matricule.")
+
+        if Utilisateur.objects.filter(matricule=matricule).exists():
+            return err("Ce matricule est déjà associé à un compte existant.")
 
         if password != password2:
-            return render(request, 'register.html', {
-                'error': "Les deux mots de passe ne correspondent pas."
-            })
+            return err("Les deux mots de passe ne correspondent pas.")
 
         if len(password) < 6:
-            return render(request, 'register.html', {
-                'error': "Le mot de passe doit contenir au moins 6 caractères."
-            })
+            return err("Le mot de passe doit contenir au moins 6 caractères.")
 
         if User.objects.filter(username=username).exists():
-            return render(request, 'register.html', {
-                'error': "Ce nom d'utilisateur existe déjà."
-            })
+            return err("Ce nom d'utilisateur existe déjà.")
 
         user = User.objects.create_user(
             username=username,
             password=password,
             email=email,
-            first_name=prenom
+            first_name=etudiant.prenom
         )
         user.save()
 
         u_obj = Utilisateur.objects.create(
             user=user,
-            nom=prenom if prenom else username,
+            nom=f"{etudiant.prenom} {etudiant.nom}",
             email=email,
             mot_de_passe='',
-            role="beneficiaire"
+            role="beneficiaire",
+            matricule=matricule,
         )
-        journaliser(u_obj, 'register', f"Nouveau compte créé : {username}")
+        journaliser(u_obj, 'register', f"Nouveau compte créé : {username} (matricule: {matricule})")
 
         return redirect('/login/')
 
