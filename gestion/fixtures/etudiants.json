@@ -1,0 +1,87 @@
+[
+  {
+    "model": "gestion.etudiantdb",
+    "pk": "EMSI-2021-001",
+    "fields": {
+      "nom": "BENNANI",
+      "prenom": "Youssef",
+      "cin": "BK234567",
+      "date_naissance": "15/03/2001",
+      "lieu_naissance": "Casablanca",
+      "filiere": "Génie Informatique",
+      "niveau": "5ème année",
+      "annee_universitaire": "2025-2026",
+      "annee_debut": "2021",
+      "annee_fin": "2026",
+      "nationalite": "Marocaine"
+    }
+  },
+  {
+    "model": "gestion.etudiantdb",
+    "pk": "EMSI-2021-002",
+    "fields": {
+      "nom": "ALAOUI",
+      "prenom": "Fatima Zahra",
+      "cin": "AA123456",
+      "date_naissance": "22/07/2001",
+      "lieu_naissance": "Rabat",
+      "filiere": "Génie Civil",
+      "niveau": "5ème année",
+      "annee_universitaire": "2025-2026",
+      "annee_debut": "2021",
+      "annee_fin": "2026",
+      "nationalite": "Marocaine"
+    }
+  },
+  {
+    "model": "gestion.etudiantdb",
+    "pk": "EMSI-2022-003",
+    "fields": {
+      "nom": "TAHIRI",
+      "prenom": "Mohamed",
+      "cin": "CD789012",
+      "date_naissance": "08/11/2002",
+      "lieu_naissance": "Fès",
+      "filiere": "Génie Électrique",
+      "niveau": "4ème année",
+      "annee_universitaire": "2025-2026",
+      "annee_debut": "2022",
+      "annee_fin": "2026",
+      "nationalite": "Marocaine"
+    }
+  },
+  {
+    "model": "gestion.etudiantdb",
+    "pk": "EMSI-2022-004",
+    "fields": {
+      "nom": "CHAKIR",
+      "prenom": "Imane",
+      "cin": "EF345678",
+      "date_naissance": "30/05/2002",
+      "lieu_naissance": "Marrakech",
+      "filiere": "Génie Industriel",
+      "niveau": "4ème année",
+      "annee_universitaire": "2025-2026",
+      "annee_debut": "2022",
+      "annee_fin": "2026",
+      "nationalite": "Marocaine"
+    }
+  },
+  {
+    "model": "gestion.etudiantdb",
+    "pk": "EMSI-2023-005",
+    "fields": {
+      "nom": "IDRISSI",
+      "prenom": "Amine",
+      "cin": "GH901234",
+      "date_naissance": "14/09/2003",
+      "lieu_naissance": "Tanger",
+      "filiere": "Génie Logiciel",
+      "niveau": "3ème année",
+      "annee_universitaire": "2025-2026",
+      "annee_debut": "2023",
+      "annee_fin": "2026",
+      "nationalite": "Marocaine"
+    }
+  }
+]
