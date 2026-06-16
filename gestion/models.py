@@ -37,6 +37,21 @@ class Attestation(models.Model):
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='valide')
     def __str__(self): return str(self.numero)
 
+class EtudiantDB(models.Model):
+    matricule = models.CharField(max_length=50, primary_key=True, unique=True)
+    nom = models.CharField(max_length=100)
+    prenom = models.CharField(max_length=100)
+    cin = models.CharField(max_length=20)
+    date_naissance = models.CharField(max_length=20)
+    lieu_naissance = models.CharField(max_length=100)
+    filiere = models.CharField(max_length=100)
+    niveau = models.CharField(max_length=50)
+    annee_universitaire = models.CharField(max_length=20)
+    annee_debut = models.CharField(max_length=10)
+    annee_fin = models.CharField(max_length=10)
+    nationalite = models.CharField(max_length=50, default='Marocaine')
+    def __str__(self): return f"{self.prenom} {self.nom} ({self.matricule})"
+
 class JournalAction(models.Model):
     ACTION_CHOICES = [('connexion','Connexion'),('deconnexion','Déconnexion'),('validation','Validation'),('rejet','Rejet'),('generation_pdf','PDF'),('soumission','Soumission'),('register','Inscription')]
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.SET_NULL, null=True, blank=True)
