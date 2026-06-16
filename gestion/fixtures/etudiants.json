@@ -13,7 +13,8 @@
       "annee_universitaire": "2025-2026",
       "annee_debut": "2021",
       "annee_fin": "2026",
-      "nationalite": "Marocaine"
+      "nationalite": "Marocaine",
+      "email": "youssef.bennani@gmail.com"
     }
   },
   {
@@ -30,7 +31,8 @@
       "annee_universitaire": "2025-2026",
       "annee_debut": "2021",
       "annee_fin": "2026",
-      "nationalite": "Marocaine"
+      "nationalite": "Marocaine",
+      "email": "fatima.alaoui@gmail.com"
     }
   },
   {
@@ -47,7 +49,8 @@
       "annee_universitaire": "2025-2026",
       "annee_debut": "2022",
       "annee_fin": "2026",
-      "nationalite": "Marocaine"
+      "nationalite": "Marocaine",
+      "email": "mohamed.tahiri@gmail.com"
     }
   },
   {
@@ -64,7 +67,26 @@
       "annee_universitaire": "2025-2026",
       "annee_debut": "2022",
       "annee_fin": "2026",
-      "nationalite": "Marocaine"
+      "nationalite": "Marocaine",
+      "email": "imane.chakir@gmail.com"
+    }
+  },
+  {
+    "model": "gestion.etudiantdb",
+    "pk": "EMSI-2021-006",
+    "fields": {
+      "nom": "AHMICH",
+      "prenom": "Akram",
+      "cin": "BJ456789",
+      "date_naissance": "15/05/2001",
+      "lieu_naissance": "Rabat",
+      "filiere": "Génie Informatique",
+      "niveau": "5ème année",
+      "annee_universitaire": "2025-2026",
+      "annee_debut": "2021",
+      "annee_fin": "2026",
+      "nationalite": "Marocaine",
+      "email": "houssam.ahmich1@gmail.com"
     }
   },
   {
@@ -81,7 +103,8 @@
       "annee_universitaire": "2025-2026",
       "annee_debut": "2023",
       "annee_fin": "2026",
-      "nationalite": "Marocaine"
+      "nationalite": "Marocaine",
+      "email": "amine.idrissi@gmail.com"
     }
   }
 ]
