@@ -243,13 +243,39 @@ def accepter_demande(request, id):
 
         # Email étudiant — attestation en pièce jointe
         try:
-            pdf_response = generer_attestation_pdf(request, d.id)
-            pdf_bytes = pdf_response.content
+            # Créer/récupérer l'attestation et générer le QR code
+            attestation, att_created = Attestation.objects.get_or_create(demande=d)
+            if att_created or not attestation.qr_code:
+                from .utils import generer_qr_code
+                base_url = request.build_absolute_uri('/')[:-1]
+                qr_path = generer_qr_code(str(attestation.numero), base_url)
+                attestation.qr_code = qr_path
+                attestation.save()
+
+            # Appel direct au générateur PDF (sans passer par generer_attestation_pdf
+            # qui renverrait un redirect si un check auth échoue → pdf_bytes vide)
+            type_doc = d.type_document
+            if type_doc == "Attestation de scolarité":
+                pdf_resp = generer_pdf_scolarite(request, d, attestation)
+            elif type_doc == "Attestation d'inscription":
+                pdf_resp = generer_pdf_inscription(request, d, attestation)
+            elif type_doc == "Attestation de réussite":
+                pdf_resp = generer_pdf_reussite(request, d, attestation)
+            elif type_doc == "Attestation de diplôme":
+                pdf_resp = generer_pdf_diplome(request, d, attestation)
+            else:
+                pdf_resp = generer_pdf_scolarite(request, d, attestation)
+
+            pdf_bytes = pdf_resp.content
+            if not pdf_bytes:
+                raise ValueError("PDF généré vide")
+
             try:
                 etudiant_obj = EtudiantDB.objects.get(matricule=d.matricule)
-                email_dest = etudiant_obj.email or d.utilisateur.email
+                email_dest = getattr(etudiant_obj, 'email', None) or d.utilisateur.email
             except EtudiantDB.DoesNotExist:
                 email_dest = d.utilisateur.email
+
             if email_dest:
                 msg = EmailMessage(
                     subject="Votre attestation est prête ✅",
