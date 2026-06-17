@@ -218,54 +218,41 @@
       <div class="chart-area"><div class="bar-chart" id="barChart"></div></div>
     </div>
     <div class="card">
-      <div class="card-head"><div class="card-title">Répartition statuts</div></div>
+      <div class="card-head"><div class="card-title">Répartition par type</div></div>
       <div class="donut-wrap">
         <svg class="donut-svg" viewBox="0 0 140 140">
           <circle cx="70" cy="70" r="54" fill="none" stroke="#f0f0ec" stroke-width="18"/>
-          <circle cx="70" cy="70" r="54" fill="none" stroke="#4a7c59" stroke-width="18" stroke-dasharray="0 340" id="d-accepted" stroke-linecap="round" transform="rotate(-90 70 70)"/>
-          <circle cx="70" cy="70" r="54" fill="none" stroke="#f59e0b" stroke-width="18" stroke-dasharray="0 340" id="d-pending" stroke-linecap="round" transform="rotate(-90 70 70)"/>
-          <circle cx="70" cy="70" r="54" fill="none" stroke="#ef4444" stroke-width="18" stroke-dasharray="0 340" id="d-refused" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#4a7c59" stroke-width="18" stroke-dasharray="0 340" id="dt-sc"  stroke-linecap="butt" transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#06b6d4" stroke-width="18" stroke-dasharray="0 340" id="dt-ins" stroke-linecap="butt" transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#f59e0b" stroke-width="18" stroke-dasharray="0 340" id="dt-reu" stroke-linecap="butt" transform="rotate(-90 70 70)"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#8b5cf6" stroke-width="18" stroke-dasharray="0 340" id="dt-dip" stroke-linecap="butt" transform="rotate(-90 70 70)"/>
           <text x="70" y="65" text-anchor="middle" font-size="20" font-weight="800" fill="#0f0f0f" font-family="Inter">{{ total_demandes }}</text>
           <text x="70" y="80" text-anchor="middle" font-size="9" fill="#888880" font-family="Inter">demandes</text>
         </svg>
       </div>
       <div class="donut-legend">
-        <div class="legend-item"><div class="legend-dot-wrap"><div class="legend-dot" style="background:var(--s)"></div><span class="legend-label">Acceptées</span></div><div style="display:flex;gap:8px;align-items:center"><span class="legend-val">{{ approuvees }}</span><span class="legend-pct">{{ taux_validation }}%</span></div></div>
-        <div class="legend-item"><div class="legend-dot-wrap"><div class="legend-dot" style="background:var(--amber)"></div><span class="legend-label">En attente</span></div><div style="display:flex;gap:8px;align-items:center"><span class="legend-val">{{ en_attente }}</span><span class="legend-pct">{{ pct_attente }}%</span></div></div>
-        <div class="legend-item"><div class="legend-dot-wrap"><div class="legend-dot" style="background:var(--red)"></div><span class="legend-label">Refusées</span></div><div style="display:flex;gap:8px;align-items:center"><span class="legend-val">{{ refusees }}</span><span class="legend-pct">{{ pct_refus }}%</span></div></div>
+        <div class="legend-item"><div class="legend-dot-wrap"><div class="legend-dot" style="background:#4a7c59"></div><span class="legend-label">Scolarité</span></div><div style="display:flex;gap:8px;align-items:center"><span class="legend-val">{{ cnt_scolarite }}</span><span class="legend-pct">{{ pct_scolarite }}%</span></div></div>
+        <div class="legend-item"><div class="legend-dot-wrap"><div class="legend-dot" style="background:#06b6d4"></div><span class="legend-label">Inscription</span></div><div style="display:flex;gap:8px;align-items:center"><span class="legend-val">{{ cnt_inscription }}</span><span class="legend-pct">{{ pct_inscription }}%</span></div></div>
+        <div class="legend-item"><div class="legend-dot-wrap"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Réussite</span></div><div style="display:flex;gap:8px;align-items:center"><span class="legend-val">{{ cnt_reussite }}</span><span class="legend-pct">{{ pct_reussite }}%</span></div></div>
+        <div class="legend-item"><div class="legend-dot-wrap"><div class="legend-dot" style="background:#8b5cf6"></div><span class="legend-label">Diplôme</span></div><div style="display:flex;gap:8px;align-items:center"><span class="legend-val">{{ cnt_diplome }}</span><span class="legend-pct">{{ pct_diplome }}%</span></div></div>
       </div>
     </div>
   </div>
 
-  <div class="charts2">
-    <div class="card">
-      <div class="card-head"><div class="card-title">Activité récente</div><div class="card-sub">Dernières actions</div></div>
-      <div class="activity-list">
-        {% for a in actions_recentes %}
-        <div class="act-item">
-          <div class="act-ico {% if a.action == 'validation' %}ai-g{% elif a.action == 'soumission' %}ai-b{% elif a.action == 'rejet' %}ai-r{% else %}ai-w{% endif %}">
-            <svg viewBox="0 0 24 24">{% if a.action == 'validation' %}<polyline points="20 6 9 17 4 12"/>{% elif a.action == 'soumission' %}<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>{% elif a.action == 'rejet' %}<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>{% else %}<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/>{% endif %}</svg>
-          </div>
-          <div class="act-txt">{{ a.detail }}</div>
-          <div class="act-time">{{ a.date_action|timesince }}</div>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-head"><div class="card-title">Activité récente</div><div class="card-sub">Dernières actions</div></div>
+    <div class="activity-list">
+      {% for a in actions_recentes %}
+      <div class="act-item">
+        <div class="act-ico {% if a.action == 'validation' %}ai-g{% elif a.action == 'soumission' %}ai-b{% elif a.action == 'rejet' %}ai-r{% else %}ai-w{% endif %}">
+          <svg viewBox="0 0 24 24">{% if a.action == 'validation' %}<polyline points="20 6 9 17 4 12"/>{% elif a.action == 'soumission' %}<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>{% elif a.action == 'rejet' %}<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>{% else %}<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/>{% endif %}</svg>
         </div>
-        {% empty %}
-        <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">Aucune activité</div>
-        {% endfor %}
+        <div class="act-txt">{{ a.detail }}</div>
+        <div class="act-time">{{ a.date_action|timesince }}</div>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><div class="card-title">Répartition par type</div></div>
-      <div class="progress-list">
-        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Scolarité</span><span class="prog-val">{{ cnt_scolarite }} — {{ pct_scolarite }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#4a7c59;width:0%" data-w="{{ pct_scolarite }}%"></div></div></div>
-        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Inscription</span><span class="prog-val">{{ cnt_inscription }} — {{ pct_inscription }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#06b6d4;width:0%" data-w="{{ pct_inscription }}%"></div></div></div>
-        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Réussite</span><span class="prog-val">{{ cnt_reussite }} — {{ pct_reussite }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#f59e0b;width:0%" data-w="{{ pct_reussite }}%"></div></div></div>
-        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Diplôme</span><span class="prog-val">{{ cnt_diplome }} — {{ pct_diplome }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#8b5cf6;width:0%" data-w="{{ pct_diplome }}%"></div></div></div>
-        <div class="prog-item" style="margin-top:8px;padding-top:16px;border-top:1px solid var(--border)">
-          <div class="prog-header"><span class="prog-lbl" style="font-weight:700">Taux de validation global</span><span class="prog-val" style="color:var(--s);font-weight:700">{{ taux_validation }}%</span></div>
-          <div class="prog-track"><div class="prog-fill" style="background:var(--s);width:0%" data-w="{{ taux_validation }}%"></div></div>
-        </div>
-      </div>
+      {% empty %}
+      <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">Aucune activité</div>
+      {% endfor %}
     </div>
   </div>
 </div>
@@ -319,36 +306,27 @@ setTimeout(() => {
   document.querySelectorAll('.bar[data-h]').forEach(b => b.style.height = b.dataset.h);
 }, 200);
 
-// Donut chart — lire les valeurs depuis les data-target
-const kpiVals = document.querySelectorAll('.kpi-val[data-target]');
-const totalVal  = parseInt(kpiVals[0]?.dataset.target) || 1;
-const accVal    = parseInt(kpiVals[2]?.dataset.target) || 0;  // approuvees = 3e KPI
-
-// Lire depuis le HTML directement (éviter Django dans JS)
-const legendVals = document.querySelectorAll('.legend-val');
-const accCount  = parseInt(legendVals[0]?.textContent) || 0;
-const pendCount = parseInt(legendVals[1]?.textContent) || 0;
-const refCount  = parseInt(legendVals[2]?.textContent) || 0;
-const total     = accCount + pendCount + refCount || 1;
-
+// Donut par type — 4 segments animés
 const circ = 2 * Math.PI * 54;
-
-function setDonut(id, pct, offset) {
+const typePcts = [
+  {{ pct_scolarite }} / 100,
+  {{ pct_inscription }} / 100,
+  {{ pct_reussite }} / 100,
+  {{ pct_diplome }} / 100,
+];
+const typeIds = ['dt-sc', 'dt-ins', 'dt-reu', 'dt-dip'];
+let cumOffset = 0;
+typeIds.forEach((id, i) => {
   const el = document.getElementById(id);
   if (!el) return;
-  el.setAttribute('stroke-dashoffset', -circ * offset);
+  const pct = typePcts[i];
+  el.setAttribute('stroke-dashoffset', -(circ * cumOffset));
   setTimeout(() => {
     el.style.transition = 'stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1)';
     el.setAttribute('stroke-dasharray', `${circ * pct} ${circ * (1 - pct)}`);
   }, 400);
-}
-
-const pA = accCount / total;
-const pP = pendCount / total;
-const pR = refCount / total;
-setDonut('d-accepted', pA, 0);
-setDonut('d-pending',  pP, pA);
-setDonut('d-refused',  pR, pA + pP);
+  cumOffset += pct;
+});
 
 // Period buttons
 function setPeriod(btn) {
