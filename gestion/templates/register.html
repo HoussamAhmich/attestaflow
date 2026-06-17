@@ -55,21 +55,6 @@
     .loaded .fg-3{opacity:1;transform:translateY(0);transition-delay:0.72s;}
     .loaded .fg-4{opacity:1;transform:translateY(0);transition-delay:0.77s;}
     .loaded .fg-5{opacity:1;transform:translateY(0);transition-delay:0.82s;}
-    .mat-row{display:flex;gap:10px;align-items:flex-start;}
-    .mat-row .fwrap{flex:1;}
-    .btn-verify{background:var(--ink);color:white;border:none;border-radius:8px;padding:0 18px;height:43px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.2s;flex-shrink:0;}
-    .btn-verify:hover{background:var(--s);}
-    .btn-verify:disabled{opacity:0.55;cursor:not-allowed;}
-    .mat-status{border-radius:8px;padding:9px 13px;font-size:13px;font-weight:500;margin-top:8px;display:flex;align-items:center;gap:7px;}
-    .mat-status.error{background:#fef2f2;border:1.5px solid #fca5a5;color:#dc2626;}
-    .mat-status.warn{background:#fffbeb;border:1.5px solid #fcd34d;color:#92400e;}
-    .ecard{background:var(--sl);border:1.5px solid #b8d4c0;border-radius:10px;padding:14px 16px;margin-top:12px;}
-    .ecard-header{display:flex;align-items:center;gap:7px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #b8d4c0;}
-    .ecard-header svg{width:16px;height:16px;stroke:var(--s);fill:none;stroke-width:2.5;flex-shrink:0;}
-    .ecard-found{font-size:12px;font-weight:700;color:var(--sd);}
-    .ecard-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .ecard-field label{display:block;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;}
-    .ecard-field span{display:block;font-size:13px;font-weight:600;color:var(--ink);}
     .flbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;transition:color 0.2s;}
     .fg.focused .flbl{color:var(--s);}
     .fwrap{position:relative;}
@@ -140,30 +125,12 @@
 
     <form method="POST" id="regForm">
       {% csrf_token %}
-      <input type="hidden" name="matricule" id="matHidden" value="{{ submitted_matricule|default:'' }}">
-
-      <!-- Matricule lookup -->
+      <!-- Matricule -->
       <div class="fg fg-0 full" style="margin-bottom:16px;">
-        <label class="flbl">Matricule étudiant</label>
-        <div class="mat-row">
-          <div class="fwrap">
-            <svg class="finput-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            <input class="finput" type="text" id="matInput" placeholder="Ex: EMSI-2021-001" autocomplete="off" value="{{ submitted_matricule|default:'' }}">
-          </div>
-          <button type="button" id="btnVerifier" class="btn-verify">Vérifier</button>
-        </div>
-        <div id="matStatus" class="mat-status" style="display:none;"></div>
-        <div id="etudiantCard" class="ecard" style="display:none;">
-          <div class="ecard-header">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            <span class="ecard-found">Étudiant trouvé ✅</span>
-          </div>
-          <div class="ecard-grid">
-            <div class="ecard-field"><label>Nom complet</label><span id="disp-nom">—</span></div>
-            <div class="ecard-field"><label>Filière</label><span id="disp-filiere">—</span></div>
-            <div class="ecard-field"><label>Niveau</label><span id="disp-niveau">—</span></div>
-            <div class="ecard-field"><label>Année</label><span id="disp-annee">—</span></div>
-          </div>
+        <label class="flbl" for="matInput">Matricule étudiant</label>
+        <div class="fwrap">
+          <svg class="finput-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <input class="finput" type="text" id="matInput" name="matricule" placeholder="Ex: EMSI-2021-001" autocomplete="off" value="{{ submitted_matricule|default:'' }}" required>
         </div>
       </div>
 
@@ -289,66 +256,7 @@ function checkMatch() {
   }
 }
 
-/* ── Matricule AJAX ── */
-var matriculeVerifie = false;
-
-document.getElementById('matInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btnVerifier').click(); }
-});
-
-document.getElementById('matInput').addEventListener('input', function() {
-  matriculeVerifie = false;
-  document.getElementById('etudiantCard').style.display = 'none';
-  document.getElementById('matStatus').style.display = 'none';
-  document.getElementById('matHidden').value = '';
-});
-
-document.getElementById('btnVerifier').addEventListener('click', function() {
-  var mat = document.getElementById('matInput').value.trim();
-  var status = document.getElementById('matStatus');
-  var card   = document.getElementById('etudiantCard');
-  if (!mat) {
-    status.textContent = 'Entrez votre matricule.';
-    status.className = 'mat-status warn';
-    status.style.display = 'flex';
-    return;
-  }
-  var btn = this;
-  btn.textContent = '…'; btn.disabled = true;
-  fetch('/verifier-matricule/' + encodeURIComponent(mat) + '/')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      btn.textContent = 'Vérifier'; btn.disabled = false;
-      if (data.found) {
-        document.getElementById('disp-nom').textContent     = data.prenom + ' ' + data.nom;
-        document.getElementById('disp-filiere').textContent = data.filiere;
-        document.getElementById('disp-niveau').textContent  = data.niveau;
-        document.getElementById('disp-annee').textContent   = data.annee_universitaire;
-        card.style.display = 'block';
-        status.style.display = 'none';
-        document.getElementById('matHidden').value = mat;
-        matriculeVerifie = true;
-      } else {
-        card.style.display = 'none';
-        status.textContent = 'Matricule introuvable ❌ — vérifiez votre matricule.';
-        status.className = 'mat-status error';
-        status.style.display = 'flex';
-        matriculeVerifie = false;
-      }
-    })
-    .catch(function() { btn.textContent = 'Vérifier'; btn.disabled = false; });
-});
-
 document.getElementById('regForm').addEventListener('submit', function(e) {
-  if (!matriculeVerifie) {
-    e.preventDefault();
-    var status = document.getElementById('matStatus');
-    status.textContent = 'Veuillez vérifier votre matricule avant de vous inscrire.';
-    status.className = 'mat-status warn';
-    status.style.display = 'flex';
-    document.getElementById('matInput').focus();
-    return;
-  }
   if (regPw.value !== regPw2.value) {
     e.preventDefault();
     matchTxt.textContent = '✗ Les mots de passe ne correspondent pas';
