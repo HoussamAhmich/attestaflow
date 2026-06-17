@@ -140,7 +140,7 @@ def ajouter_demande(request):
         journaliser(utilisateur, 'soumission', f"Demande soumise par {utilisateur.nom}")
 
         # Email étudiant — confirmation de réception
-        email_etudiant = etudiant.email or utilisateur.email
+        email_etudiant = getattr(etudiant, 'email', None) or utilisateur.email
         if email_etudiant:
             try:
                 EmailMessage(
