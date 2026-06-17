@@ -214,7 +214,7 @@
 
   <div class="charts">
     <div class="card">
-      <div class="card-head"><div class="card-title">Demandes par mois</div><div class="card-sub">12 derniers mois</div></div>
+      <div class="card-head"><div class="card-title">Demandes (7 derniers jours)</div><div class="card-sub">Par date de soumission</div></div>
       <div class="chart-area"><div class="bar-chart" id="barChart"></div></div>
     </div>
     <div class="card">
@@ -278,9 +278,9 @@ setTimeout(() => {
   });
 }, 400);
 
-// Bar chart — données réelles (12 derniers mois)
-const months = {{ monthly_labels|safe }};
-const data   = {{ monthly_data|safe }};
+// Bar chart — demandes par jour (7 derniers jours)
+const months = {{ daily_labels|safe }};
+const data   = {{ daily_data|safe }};
 const maxD   = Math.max(...data, 1);
 const chart  = document.getElementById('barChart');
 

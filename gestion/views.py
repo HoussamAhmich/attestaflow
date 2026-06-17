@@ -1311,23 +1311,20 @@ def admin_stats(request):
     pct_reu = round((reu / total) * 100) if total else 0
     pct_dip = round((dip / total) * 100) if total else 0
 
-    # Demandes par mois — 12 derniers mois réels
+    # Demandes par jour — 7 derniers jours glissants
+    from datetime import timedelta
     today = _date.today()
-    mois_fr = ['Jan','Fév','Mar','Avr','Mai','Juin','Jul','Aoû','Sep','Oct','Nov','Déc']
-    monthly_data = []
-    monthly_labels = []
-    for i in range(11, -1, -1):
-        month = today.month - i
-        year = today.year
-        while month <= 0:
-            month += 12
-            year -= 1
+    daily_data = []
+    daily_labels = []
+    for i in range(6, -1, -1):
+        d_day = today - timedelta(days=i)
         cnt = Demande.objects.filter(
-            date_soumission__year=year,
-            date_soumission__month=month
+            date_soumission__year=d_day.year,
+            date_soumission__month=d_day.month,
+            date_soumission__day=d_day.day,
         ).count()
-        monthly_data.append(cnt)
-        monthly_labels.append(mois_fr[month - 1])
+        daily_data.append(cnt)
+        daily_labels.append(f"{d_day.day:02d}/{d_day.month:02d}")
 
     actions = JournalAction.objects.all().order_by('-date_action')[:8]
     return render(request, 'admin_stats.html', {
@@ -1341,8 +1338,8 @@ def admin_stats(request):
         'pct_inscription': pct_ins, 'cnt_inscription': ins,
         'pct_reussite': pct_reu,  'cnt_reussite': reu,
         'pct_diplome': pct_dip,   'cnt_diplome': dip,
-        'monthly_data': json.dumps(monthly_data),
-        'monthly_labels': json.dumps(monthly_labels),
+        'daily_data': json.dumps(daily_data),
+        'daily_labels': json.dumps(daily_labels),
         'actions_recentes': actions,
         'demandes_count': Demande.objects.count(),
     })
