@@ -257,9 +257,10 @@
     <div class="card">
       <div class="card-head"><div class="card-title">Répartition par type</div></div>
       <div class="progress-list">
-        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Attestation de scolarité</span><span class="prog-val">{{ pct_scolarite }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:var(--s);width:0%" data-w="{{ pct_scolarite }}%"></div></div></div>
-        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Attestation d'inscription</span><span class="prog-val">{{ pct_inscription }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#06b6d4;width:0%" data-w="{{ pct_inscription }}%"></div></div></div>
-        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Attestation de présence</span><span class="prog-val">{{ pct_presence }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:var(--amber);width:0%" data-w="{{ pct_presence }}%"></div></div></div>
+        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Scolarité</span><span class="prog-val">{{ cnt_scolarite }} — {{ pct_scolarite }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#4a7c59;width:0%" data-w="{{ pct_scolarite }}%"></div></div></div>
+        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Inscription</span><span class="prog-val">{{ cnt_inscription }} — {{ pct_inscription }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#06b6d4;width:0%" data-w="{{ pct_inscription }}%"></div></div></div>
+        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Réussite</span><span class="prog-val">{{ cnt_reussite }} — {{ pct_reussite }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#f59e0b;width:0%" data-w="{{ pct_reussite }}%"></div></div></div>
+        <div class="prog-item"><div class="prog-header"><span class="prog-lbl">Diplôme</span><span class="prog-val">{{ cnt_diplome }} — {{ pct_diplome }}%</span></div><div class="prog-track"><div class="prog-fill" style="background:#8b5cf6;width:0%" data-w="{{ pct_diplome }}%"></div></div></div>
         <div class="prog-item" style="margin-top:8px;padding-top:16px;border-top:1px solid var(--border)">
           <div class="prog-header"><span class="prog-lbl" style="font-weight:700">Taux de validation global</span><span class="prog-val" style="color:var(--s);font-weight:700">{{ taux_validation }}%</span></div>
           <div class="prog-track"><div class="prog-fill" style="background:var(--s);width:0%" data-w="{{ taux_validation }}%"></div></div>
@@ -290,22 +291,21 @@ setTimeout(() => {
   });
 }, 400);
 
-// Bar chart — données fixes pour la démo
-const months = ['Jan','Fév','Mar','Avr','Mai','Jui','Jul','Aoû','Sep','Oct','Nov','Déc'];
-const totalDemandes = parseInt(document.querySelector('.kpi-val[data-target]').dataset.target) || 0;
-const data = [4, 7, 5, 12, 9, 15, 11, 8, 14, 18, 13, totalDemandes];
-const maxD = Math.max(...data);
-const chart = document.getElementById('barChart');
+// Bar chart — données réelles (12 derniers mois)
+const months = {{ monthly_labels|safe }};
+const data   = {{ monthly_data|safe }};
+const maxD   = Math.max(...data, 1);
+const chart  = document.getElementById('barChart');
 
 data.forEach((v, i) => {
   const col = document.createElement('div');
   col.className = 'bar-col';
   const pct = Math.round((v / maxD) * 100);
-  const isLast = i === data.length - 1;
+  const isCurrent = (i === data.length - 1);
   col.innerHTML = `
     <div class="bar-wrap">
       <div class="bar"
-        style="height:0%;background:${isLast ? 'var(--s)' : '#d0e8d8'};width:80%;
+        style="height:0%;background:${isCurrent ? 'var(--s)' : '#d0e8d8'};width:80%;
                transition:height 0.8s ${i * 0.05}s cubic-bezier(0.16,1,0.3,1);"
         data-h="${pct}%">
         <span class="bar-val">${v}</span>

@@ -1290,6 +1290,7 @@ def admin_stats(request):
             return redirect('/dashboard/')
     except:
         return redirect('/login/')
+    from datetime import date as _date
     demandes = Demande.objects.all()
     total = demandes.count() or 1
     approuvees = demandes.filter(statut='acceptée').count()
@@ -1299,12 +1300,35 @@ def admin_stats(request):
     taux = round((approuvees / total) * 100) if total else 0
     pct_attente = round((en_attente / total) * 100) if total else 0
     pct_refus = round((refusees / total) * 100) if total else 0
+
+    # Répartition par les 4 vrais types
     sc  = demandes.filter(type_document__icontains='scolarité').count()
     ins = demandes.filter(type_document__icontains='inscription').count()
-    pre = demandes.filter(type_document__icontains='présence').count()
+    reu = demandes.filter(type_document__icontains='réussite').count()
+    dip = demandes.filter(type_document__icontains='diplôme').count()
     pct_sc  = round((sc  / total) * 100) if total else 0
     pct_ins = round((ins / total) * 100) if total else 0
-    pct_pre = round((pre / total) * 100) if total else 0
+    pct_reu = round((reu / total) * 100) if total else 0
+    pct_dip = round((dip / total) * 100) if total else 0
+
+    # Demandes par mois — 12 derniers mois réels
+    today = _date.today()
+    mois_fr = ['Jan','Fév','Mar','Avr','Mai','Juin','Jul','Aoû','Sep','Oct','Nov','Déc']
+    monthly_data = []
+    monthly_labels = []
+    for i in range(11, -1, -1):
+        month = today.month - i
+        year = today.year
+        while month <= 0:
+            month += 12
+            year -= 1
+        cnt = Demande.objects.filter(
+            date_soumission__year=year,
+            date_soumission__month=month
+        ).count()
+        monthly_data.append(cnt)
+        monthly_labels.append(mois_fr[month - 1])
+
     actions = JournalAction.objects.all().order_by('-date_action')[:8]
     return render(request, 'admin_stats.html', {
         'user': request.user, 'role': u.role,
@@ -1312,8 +1336,13 @@ def admin_stats(request):
         'refusees': refusees, 'en_attente': en_attente,
         'attestations_generees': attestations,
         'taux_validation': taux, 'pct_attente': pct_attente,
-        'pct_refus': pct_refus, 'pct_scolarite': pct_sc,
-        'pct_inscription': pct_ins, 'pct_presence': pct_pre,
+        'pct_refus': pct_refus,
+        'pct_scolarite': pct_sc,  'cnt_scolarite': sc,
+        'pct_inscription': pct_ins, 'cnt_inscription': ins,
+        'pct_reussite': pct_reu,  'cnt_reussite': reu,
+        'pct_diplome': pct_dip,   'cnt_diplome': dip,
+        'monthly_data': json.dumps(monthly_data),
+        'monthly_labels': json.dumps(monthly_labels),
         'actions_recentes': actions,
         'demandes_count': Demande.objects.count(),
     })
